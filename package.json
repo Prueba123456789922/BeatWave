@@ -1,0 +1,12 @@
+{
+  "name": "beatwave",
+  "version": "1.0.0",
+  "private": true,
+  "devDependencies": { "esbuild": "^0.21.5" },
+  "scripts": {
+    "web": "node tools/copy-www.js",
+    "apk:add": "npx cap add android && node tools/patch-android.js",
+    "apk:sync": "node tools/copy-www.js && npx cap sync android",
+    "apk:open": "npx cap open android"
+  }
+}

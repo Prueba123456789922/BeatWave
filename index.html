@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>BeatWave</title>
+<meta name="theme-color" content="#0D0D11">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="BeatWave">
+<meta name="format-detection" content="telephone=no">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Orbitron:wght@500;800&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="fade"></div>
+
+<!-- MENÚ PRINCIPAL -->
+<section id="welcome" class="screen active"><div class="wRings"><i></i><i></i><i></i></div><small>Bienvenido a</small><h1>BeatWave</h1></section>
+
+<section id="menu" class="screen">
+  <div id="menuBg"></div><div id="mParts"></div>
+  <header id="mBar">
+    <button id="profile" aria-label="Perfil"><i class="pav">I</i><span><b class="pnm">Invitado</b><small class="plv">Nv. 1</small><u class="pbar"><i></i></u></span></button><button id="coinChip" class="coinChip" type="button" aria-label="Monedas"><svg class="i" viewBox="0 0 24 24"><circle cx="8" cy="8" r="6"/><path d="M18.09 10.37A6 6 0 1 1 10.34 18"/><path d="M7 6h1v4"/><path d="m16.71 13.88.7.71-2.82 2.82"/></svg><b class="coinN">0</b></button><span id="netChip">Sin conexión</span>
+    <div id="mInfo"><div id="inf1"></div><div id="inf2"></div><div id="inf3"></div></div>
+    <div id="mPlayer">
+      <div class="ctl"><button id="nPrev" aria-label="Anterior"></button><button id="nPlay" aria-label="Reproducir o pausar"></button><button id="nStop" aria-label="Detener"></button><button id="nNext" aria-label="Siguiente"></button><button id="nInfo" aria-label="Información de la canción"></button><button id="nMenu" aria-label="Ajustes"></button></div>
+      <div id="nProg"><i></i></div>
+    </div>
+  </header>
+  <main id="mStage" data-s="0">
+    <div id="orbPos"><div id="orbBox"><canvas id="orbViz"></canvas><button id="btnPlay" class="logo" aria-label="Abrir el menú"><i class="ln l1"></i><i class="ln l2"></i><i class="ln l3"></i><span id="orbLbl">BeatWave</span></button></div><p class="tagline">Cualquier canción es un nivel</p></div>
+    <nav id="mMenu" aria-label="Menú principal">
+      <div class="mset s1">
+        <button id="mPlay" class="mb c1"><i class="mbi"><svg class="i" viewBox="0 0 24 24"><polygon points="6 3 20 12 6 21 6 3"/></svg></i><span class="mt">Jugar<small>Elige una canción</small></span><i class="mbc"><svg class="i" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></i></button>
+        <button id="btnHow" class="mb c2" data-go="how"><i class="mbi"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></i><span class="mt">Cómo jugar<small>Aprende las notas</small></span><i class="mbc"><svg class="i" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></i></button>
+        <button id="btnSettings" class="mb c3"><i class="mbi"><svg class="i fi" viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg></i><span class="mt">Ajustes<small>Personaliza BeatWave</small></span><i class="mbc"><svg class="i" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></i></button>
+        <button id="mExit" class="mb c4"><i class="mbi"><svg class="i" viewBox="0 0 24 24"><path d="M12 2v10"/><path d="M18.4 6.6a9 9 0 1 1-12.77.04"/></svg></i><span class="mt">Salir<small>Cerrar el juego</small></span><i class="mbc"><svg class="i" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></i></button>
+      </div>
+      <div class="mset s2">
+        <button id="mSolo" class="mb c1"><i class="mbi"><svg class="i" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></i><span class="mt">Elegir canción<small>Tu biblioteca</small></span><i class="mbc"><svg class="i" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></i></button>
+        <button id="mRand" class="mb c3"><i class="mbi"><svg class="i" viewBox="0 0 24 24"><path d="m18 14 4 4-4 4"/><path d="m18 2 4 4-4 4"/><path d="M2 18h1.973a4 4 0 0 0 3.3-1.7l5.454-7.6a4 4 0 0 1 3.3-1.7H22"/><path d="M2 6h1.972a4 4 0 0 1 3.6 2.2"/><path d="M22 18h-6.041a4 4 0 0 1-3.3-1.8l-.359-.45"/></svg></i><span class="mt">Aleatoria<small>Sorpréndeme</small></span><i class="mbc"><svg class="i" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></i></button>
+        <button id="mBack" class="mb c4"><i class="mbi"><svg class="i" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></i><span class="mt">Atrás<small>Volver al inicio</small></span><i class="mbc"><svg class="i" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></i></button>
+      </div>
+    </nav>
+  </main>
+  <footer id="mBot">
+    <div id="nowInfo"><div id="nowThumb" class="th"></div><div class="tx"><b id="nowPlaying">Sin canción</b><small id="nowArtist"></small></div></div>
+    <div id="mMeta"><span>BeatWave · V: 1.0.0</span><span id="fpsB" class="fps"><b>60</b> fps</span><span id="msB" class="ms">16.7ms</span></div>
+  </footer>
+  <input id="fileImport" type="file" multiple hidden accept="audio/*,.json,.tbeat,.bwave,image/*,video/*">
+</section>
+
+<!-- SELECTOR DE CANCIONES -->
+<section id="select" class="screen">
+  <div id="selBg"></div>
+  <aside id="side">
+    <button class="back" data-go="menu"><svg class="i" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg> Menú</button>
+    <nav>
+      <h5>Biblioteca</h5>
+      <button id="btnImp2" type="button"><svg class="i" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg> Importar</button>
+      <h5>Ajustes</h5>
+      <button data-set="audio"><svg class="i" viewBox="0 0 24 24"><path d="M2 10v3"/><path d="M6 6v11"/><path d="M10 3v18"/><path d="M14 8v7"/><path d="M18 5v13"/><path d="M22 10v3"/></svg> Audio y volumen</button>
+      <button data-set="gfx"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="22" x2="18" y1="12" y2="12"/><line x1="6" x2="2" y1="12" y2="12"/><line x1="12" x2="12" y1="6" y2="2"/><line x1="12" x2="12" y1="22" y2="18"/></svg> Gráficos y color de notas</button>
+      <button data-set="play"><svg class="i" viewBox="0 0 24 24"><polygon points="6 3 20 12 6 21 6 3"/></svg> Jugabilidad</button>
+      <button data-set="bg"><svg class="i" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg> Fondo</button>
+      <button data-set="all"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg> Todos los ajustes</button>
+      <h5>Competir</h5>
+      <button id="btnRank"><svg class="i fi" viewBox="0 0 24 24"><path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94.63 1.5 1.98 2.63 3.61 2.96V19H7v2h10v-2h-4v-3.1c1.63-.33 2.98-1.46 3.61-2.96C19.08 12.63 21 10.55 21 8V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm14 0c0 1.3-.84 2.4-2 2.82V7h2v1z"/></svg> Mis récords</button>
+      <button id="btnAch"><svg class="i fi" viewBox="0 0 24 24"><path d="M9.68 13.69 12 11.93l2.31 1.76-.88-2.85L15.75 9h-2.84L12 6.19 11.09 9H8.25l2.31 1.84-.88 2.85zM20 10c0-4.42-3.58-8-8-8s-8 3.58-8 8c0 2.03.76 3.87 2 5.28V23l6-2 6 2v-7.72c1.24-1.41 2-3.25 2-5.28zm-8-6c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6 2.69-6 6-6z"/></svg> Logros</button>
+      <button id="btnMis"><svg class="i fi" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 3a7 7 0 110 14 7 7 0 010-14z"/><circle cx="12" cy="12" r="3.6"/></svg> Misiones</button>
+      <h5>Ayuda</h5>
+      <button data-go="how"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg> Cómo jugar</button>
+      <button id="btnTutS2"><svg class="i" viewBox="0 0 24 24"><polygon points="9 4 21 12 9 20 9 4"/><line x1="4" x2="4" y1="4" y2="20"/></svg> Repetir tutorial</button>
+      <button id="btnCalib2"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Calibrar latencia</button>
+    </nav>
+  </aside>
+  <div id="shade"></div>
+  <main>
+<div id="selTop"><button id="smCancel" type="button" aria-label="Cancelar"><svg class="i" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button><b id="smCount">Toca para elegir</b><button id="smAll" type="button">Todas</button><button id="smOpt" type="button" aria-label="Opciones"><svg class="i fi" viewBox="0 0 24 24"><circle cx="5" cy="12" r="2.2"/><circle cx="12" cy="12" r="2.2"/><circle cx="19" cy="12" r="2.2"/></svg></button><button id="smDel" type="button" aria-label="Papelera" disabled><svg class="i" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg></button></div>
+
+    <header>
+      <button id="sdOpen" aria-label="Menú"><svg class="i fi" viewBox="0 0 24 24"><circle cx="5" cy="5" r="2.1"/><circle cx="12" cy="5" r="2.1"/><circle cx="19" cy="5" r="2.1"/><circle cx="5" cy="12" r="2.1"/><circle cx="12" cy="12" r="2.1"/><circle cx="19" cy="12" r="2.1"/><circle cx="5" cy="19" r="2.1"/><circle cx="12" cy="19" r="2.1"/><circle cx="19" cy="19" r="2.1"/></svg></button>
+      <div class="sbox"><svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input id="search" type="text" enterkeyhint="search" placeholder="Buscar canciones" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></div>
+      <button id="btnTrophy" class="hbtn" aria-label="Mis récords" title="Mis récords"><svg class="i fi" viewBox="0 0 24 24"><path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94.63 1.5 1.98 2.63 3.61 2.96V19H7v2h10v-2h-4v-3.1c1.63-.33 2.98-1.46 3.61-2.96C19.08 12.63 21 10.55 21 8V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm14 0c0 1.3-.84 2.4-2 2.82V7h2v1z"/></svg></button>
+      <button id="btnGear" class="hbtn" aria-label="Ajustes" title="Ajustes"><svg class="i fi" viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg></button>
+    </header>
+    <div id="qStrip">
+      <button id="btnAchTop" class="qchip" type="button"><svg class="i fi" viewBox="0 0 24 24"><path d="M9.68 13.69 12 11.93l2.31 1.76-.88-2.85L15.75 9h-2.84L12 6.19 11.09 9H8.25l2.31 1.84-.88 2.85zM20 10c0-4.42-3.58-8-8-8s-8 3.58-8 8c0 2.03.76 3.87 2 5.28V23l6-2 6 2v-7.72c1.24-1.41 2-3.25 2-5.28zm-8-6c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6 2.69-6 6-6z"/></svg><span>Logros</span><b id="achCnt">0/0</b></button>
+      <button id="btnMisTop" class="qchip" type="button"><svg class="i fi" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 3a7 7 0 110 14 7 7 0 010-14z"/><circle cx="12" cy="12" r="3.6"/></svg><span>Misiones</span></button>
+      <button id="misMini" class="misMini" type="button" aria-label="Misión activa"><small id="misMiniT">—</small><u><i></i></u></button>
+    </div>
+    <div id="orgBar"><span>Mostrar</span><button data-org="recent" class="on">Recientes</button><button data-org="fav">Favoritas</button><button data-org="lists">Listas</button></div>
+    <div id="fmtBar"><span>Ordenar por</span>
+      <button data-fmt="all" class="on" type="button">Todo</button>
+      <button data-fmt="mp3" type="button"><svg class="i" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg><span>Música<small>MP3</small></span></button>
+      <button data-fmt="mp4" type="button"><svg class="i" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="m9 8 6 4-6 4Z"/></svg><span>Video<small>MP4</small></span></button>
+          <span id="selTools"><button id="btnTrash" type="button" aria-label="Papelera" title="Papelera"><svg class="i" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg><b id="trashN" style="display:none"></b></button></span><span id="viewBar"><button data-v="list" aria-label="Lista" title="Lista"><svg class="i fi" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="7" rx="2"/><rect x="3" y="13" width="18" height="7" rx="2"/></svg></button><button data-v="compact" aria-label="Compacta" title="Compacta"><svg class="i fi" viewBox="0 0 24 24"><rect x="3" y="3.5" width="18" height="4.4" rx="1.6"/><rect x="3" y="9.8" width="18" height="4.4" rx="1.6"/><rect x="3" y="16.1" width="18" height="4.4" rx="1.6"/></svg></button><button data-v="grid" aria-label="Cuadrícula" title="Cuadrícula"><svg class="i fi" viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="2.2"/><rect x="13" y="3" width="8" height="8" rx="2.2"/><rect x="3" y="13" width="8" height="8" rx="2.2"/><rect x="13" y="13" width="8" height="8" rx="2.2"/></svg></button><button data-v="carousel" aria-label="Carrusel" title="Carrusel"><svg class="i fi" viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="18" rx="2.6"/><rect x="2" y="6" width="3.5" height="12" rx="1.6"/><rect x="18.5" y="6" width="3.5" height="12" rx="1.6"/></svg></button></span>
+    </div>
+        <div id="plRow"></div>
+    <button id="tutPin" class="pin"><b>Tutorial</b><small>Aprende todas las notas · fijado hasta que lo completes</small></button>
+    <div id="body"><div id="infoStrip"></div><ul id="list"></ul><div id="detail"></div></div>
+    <footer class="dock">
+      <div class="dockTop">
+        <div id="diffBar">
+      <span>Dificultad</span>
+      <div id="diffWrap">
+        <button id="diffSelect" class="diffBtn" aria-haspopup="listbox" aria-expanded="false">
+          <span id="diffLabel">Normal</span>
+          <svg class="i" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div id="diffMenu" class="diffMenu" role="listbox">
+          <button data-diff="0" role="option"><b>Fácil</b><small>Solo los golpes más marcados. Ideal para aprender.</small></button>
+          <button data-diff="1" role="option"><b>Normal</b><small>Más notas, dobles en los golpes fuertes y streams cortos.</small></button>
+          <button data-diff="2" role="option"><b>Difícil</b><small>Muchas notas, streams, dobles y cintas. Para quien ya domina.</small></button>
+        </div>
+      </div>
+    </div>
+        <button id="btnStart" class="play sm"><svg class="i" viewBox="0 0 24 24"><polygon points="6 3 20 12 6 21 6 3"/></svg><span>Jugar</span></button>
+      </div>
+      <div class="dockRow">
+        <button class="dk" data-do="back" aria-label="Atrás"><svg class="i" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg><span>Atrás</span></button>
+        <button class="dk" data-do="mods" aria-label="Mods"><svg class="i" viewBox="0 0 24 24"><line x1="21" x2="14" y1="4" y2="4"/><line x1="10" x2="3" y1="4" y2="4"/><line x1="21" x2="12" y1="12" y2="12"/><line x1="8" x2="3" y1="12" y2="12"/><line x1="21" x2="16" y1="20" y2="20"/><line x1="12" x2="3" y1="20" y2="20"/><line x1="14" x2="14" y1="2" y2="6"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="16" x2="16" y1="18" y2="22"/></svg><span>Mods</span></button>
+        <button class="dk" data-do="rand" aria-label="Aleatoria"><svg class="i" viewBox="0 0 24 24"><path d="m18 14 4 4-4 4"/><path d="m18 2 4 4-4 4"/><path d="M2 18h1.973a4 4 0 0 0 3.3-1.7l5.454-7.6a4 4 0 0 1 3.3-1.7H22"/><path d="M2 6h1.972a4 4 0 0 1 3.6 2.2"/><path d="M22 18h-6.041a4 4 0 0 1-3.3-1.8l-.359-.45"/></svg><span>Azar</span></button>
+        <button class="dk" data-do="lists" aria-label="Listas"><svg class="i" viewBox="0 0 24 24"><path d="M11 12H3"/><path d="M16 6H3"/><path d="M16 18H3"/><path d="M18 9v6"/><path d="M21 12h-6"/></svg><span>Listas</span></button>
+        <button id="btnImp3" class="dk" type="button" aria-label="Importar"><svg class="i" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg><span>Importar</span></button>
+        <button id="btnOpts" class="dk" aria-label="Opciones de la canción"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg><span>Más</span></button>
+      </div>
+    </footer>
+      </main>
+  <button id="drawerTab" aria-label="Más opciones"><svg class="i" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button>
+  <aside id="drawer"><button id="drawerClose" aria-label="Cerrar"><svg class="i" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button>
+    <button id="btnMods">Modificadores</button>
+    <button id="btnNewList">Crear lista</button>
+    <button id="btnRand" aria-label="Canción aleatoria"><svg class="i" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><path d="M16 8h.01"/><path d="M8 8h.01"/><path d="M8 16h.01"/><path d="M16 16h.01"/><path d="M12 12h.01"/></svg></button>
+    
+    
+  </aside>
+</section>
+
+<!-- GAMEPLAY -->
+<section id="game" class="screen">
+  <canvas id="bgBlur" width="64" height="36"></canvas><video id="bgVideo" muted playsinline loop></video>
+  <div id="field"></div><canvas id="cv"></canvas>
+  <div id="pauseWrap" class="pause-top-right">
+    <button id="btnPause" class="pauseBtn big" aria-label="Pausa"><svg class="i" viewBox="0 0 24 24"><rect x="14" y="4" width="4" height="16" rx="1"/><rect x="6" y="4" width="4" height="16" rx="1"/></svg></button>
+  </div>
+  <div class="hud">
+    <span id="hScore">0</span>
+    <span id="hAcc">Precision: 100.00%</span>
+  </div>
+  <!-- NUEVO: countdown overlay para inicio y reanudación -->
+  <div id="countdownOverlay"><span>3</span></div>
+</section>
+
+<!-- RESULTADOS -->
+<section id="result" class="screen">
+  <canvas id="confetti"></canvas>
+  <div id="resBody"></div>
+  <div class="row">
+    <button id="btnRetry" class="play sm">Reintentar</button>
+    <button id="resRank">Mis récords</button>
+    <button id="resShare">Compartir</button>
+    <button id="resBackRank" style="display:none">Volver a récords</button>
+    <button id="resReplay" style="display:none">Ver repetición</button>
+    <button data-go="select">Continuar</button>
+  </div>
+</section>
+
+<section id="rank" class="screen">
+  <header class="pgH"><button id="rkBack" class="pgBack" aria-label="Atrás"><svg class="i" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button><div class="pgT"><h2>Mis récords</h2></div></header>
+  <div class="rkSong"><button id="rkPrev" aria-label="Canción anterior"><svg class="i" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button><div><b id="rkTitle"></b><small id="rkSub"></small></div><button id="rkNext" aria-label="Canción siguiente"><svg class="i" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button></div>
+  <div id="rkBody"></div>
+</section>
+<section id="ach" class="screen">
+  <header class="pgH"><button id="achBack" class="pgBack" aria-label="Atrás"><svg class="i" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button><div class="pgT"><h2>Logros</h2></div></header>
+  <div id="achBody"></div>
+</section>
+
+<section id="mis" class="screen">
+  <header class="pgH"><button id="misBack" class="pgBack" aria-label="Atrás"><svg class="i" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button><div class="pgT"><h2>Misiones</h2></div></header>
+  <div id="misBody"></div>
+</section>
+
+<div id="achToastHost" aria-live="polite"></div>
+<section id="loading" class="screen"><div id="loadBody"></div><div class="lbar"><i></i></div><small id="loadHint"></small>
+  <div id="readyBox"><div class="dimRow"><span>Oscurecer fondo</span><b id="dimVal">35%</b></div><input id="dimRange" type="range" min="0" max="100" step="1" aria-label="Oscurecer fondo">
+    <div class="dimQuick"><button data-d="0">Sin oscurecer</button><button data-d="100">Quitar fondo</button></div>
+    <button id="loadGo" class="play sm">Empezar</button><div id="readyCount"><i></i></div></div>
+  <button id="loadCancel">Cancelar</button></section>
+
+<section id="calib" class="screen"><h2>Calibrar latencia</h2><p id="calText"></p><div id="calPad">Toca aquí al oír cada clic</div><p id="calRes"></p><div class="row"><button id="calRetry">Reintentar</button><button id="calDone" class="play sm">Listo</button></div></section>
+
+<section id="how" class="screen">
+  <button class="back" data-go="menu" aria-label="Volver">‹</button>
+  <h2>Cómo jugar</h2>
+  <p><b>Tap:</b> toca el carril cuando el cuadrado llegue al receptor.</p>
+  <p><b>LN (barra larga):</b> mantén pulsado: ganas puntos mientras sigas presionando; si sueltas antes, fallas.</p>
+  <p><b>Flick (flecha doble):</b> toca el carril y desliza el dedo hacia el lado que indica la flecha.</p>
+  <p><b>Slide (cinta):</b> mantén pulsado y sigue la cinta con el dedo: la cinta se desplaza poco a poco hacia otro carril. Solo ganas puntos si vas encima.</p>
+  <p><b>Overdrive:</b> los aciertos llenan la barra superior; al llenarse, tus puntos valen x1.5.</p>
+  <p><b>Puntaje:</b> Perfect 300, Great 100 y Good 50, más un bonus por combo. Mientras más notas tenga la canción, más puntos puedes lograr. Los modificadores multiplican tu puntaje como en osu!.</p>
+  <p>Teclado: F · Espacio · J (Shift = flick) · Esc = pausa.</p>
+</section>
+
+<div id="pauseMenu" class="modal"><div class="panel pz">
+  <div class="pzHead"><small>Partida en pausa</small><h2>Pausa</h2></div>
+  <p id="pCountdown" class="cd" style="display:none">3</p>
+  <div id="pzMain">
+    <button id="pResume" class="pzb big"><svg class="i" viewBox="0 0 24 24"><polygon points="6 3 20 12 6 21 6 3"/></svg><span>Continuar</span></button>
+    <div class="pzRow">
+      <button id="pRetry" class="pzb"><svg class="i" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg><span>Reintentar</span></button>
+      <button id="pSet" class="pzb"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg><span>Ajustes</span></button>
+      <button id="pExit" class="pzb red"><svg class="i" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg><span>Salir</span></button>
+    </div>
+  </div>
+  <div id="pzQuick">
+    <div class="pzQh"><button id="pzBack" class="pzb sm" type="button"><svg class="i" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg><span>Volver</span></button><b>Ajustes de la partida</b></div>
+    <div class="pzSec">Fondo</div>
+    <label class="chk"><input id="qCover" type="checkbox"> Mostrar el fondo</label>
+    <label class="chk"><input id="qVideo" type="checkbox"> Video de fondo</label>
+    <label>Oscuridad del fondo <output id="oqDim"></output><input id="qDim" type="range" min="0" max="1" step="0.05"></label>
+    <div class="pzSec">Pista y círculo</div>
+    <label>Opacidad de la pista <output id="oqLane"></output><input id="qLane" type="range" min="0" max="100" step="5"></label>
+    <label>Opacidad del círculo <output id="oqRing"></output><input id="qRing" type="range" min="0" max="100" step="5"></label>
+    <div class="pzSec">Sonido</div>
+    <label class="chk"><input id="qTap" type="checkbox"> Sonido de las notas</label>
+    <label>Volumen de efectos <output id="oqSfx"></output><input id="qSfx" type="range" min="0" max="1" step="0.05"></label>
+    <label>Volumen de la música <output id="oqMu"></output><input id="qMu" type="range" min="0" max="1" step="0.05"></label>
+    <label class="chk"><input id="qVib" type="checkbox"> Vibración al acertar</label>
+    <button id="pzAll" class="pzb sm wide" type="button">Todos los ajustes</button>
+  </div>
+</div></div>
+
+<div id="exportModal" class="modal"><div class="panel"><h2>Exportar</h2>
+  <p class="exportHint">Elige el formato de exportación:</p>
+  <button id="eVideo" class="exportBtn"><b>Exportar video (WebM)</b><small>Graba ~15 s de una repetición automática de la partida con el audio y el video de fondo. Útil para compartir clips de tu jugada. Mayor peso, requiere tiempo de grabación.</small></button>
+  <button id="eAudio" class="exportBtn"><b>Exportar música (WAV)</b><small>Descarga solo la pista de audio de la canción en formato WAV (sin video). Útil para guardarla en tu biblioteca o reutilizarla. Peso alto (audio sin comprimir).</small></button>
+  <button id="eMapJson" class="exportBtn"><b>Exportar mapa (.json)</b><small>Descarga las notas del mapa actual como archivo .json, para reimportarlo o compartirlo con otros jugadores. Útil para editar o versionar mapas.</small></button>
+  <div class="row"><button id="eCancel">Cancelar</button></div>
+</div></div>
+
+<div id="tutModal" class="modal"><div class="panel"><h2 id="tTitle"></h2><p id="tText"></p><button id="tOk" class="play sm">Entendido</button></div></div>
+
+<div id="recModal" class="modal"><div class="panel wide"><h2>Registros</h2><div id="recBody"></div><button id="recOk" class="play sm">Cerrar</button></div></div>
+
+<div id="impMenu" class="modal"><div class="panel imp">
+  <h2>Importar</h2><p>¿Qué quieres añadir a tu biblioteca?</p>
+  <label class="impOpt"><i class="impI"><svg class="i" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></i><span><b>Música</b><small>MP3, WAV, M4A, OGG…</small></span><input id="impAud" type="file" multiple hidden accept="audio/*,.json,.tbeat,.bwave,image/*"></label>
+  <label class="impOpt"><i class="impI v"><svg class="i" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="m9 8 6 4-6 4Z"/></svg></i><span><b>Video</b><small>MP4, WEBM… con audio</small></span><input id="impVid" type="file" multiple hidden accept="video/*,.json,.tbeat,.bwave,image/*"></label>
+  <button id="impCancel" type="button">Cancelar</button>
+</div></div>
+
+<div id="trashModal" class="modal"><div class="panel wide trashP">
+  <h2>Papelera</h2><p>Las canciones se quedan aquí hasta que las elimines para siempre.</p>
+  <div id="trashBody"></div>
+  <button id="trashEmpty" type="button" class="dng">Vaciar papelera</button>
+  <button id="trashOk" type="button">Cerrar</button>
+</div></div>
+
+<div id="optModal" class="modal"><div class="panel"><h2>Opciones de la canción</h2>
+  <button id="oInfo">Información</button><button id="oCover">Cambiar portada</button><button id="oRen">Renombrar</button><button id="oBpm">Corregir BPM</button><button id="oExp">Exportar canción</button><button id="oPl">Añadir a una lista</button><button id="oDel">Eliminar canción</button><button id="oClose">Cerrar</button></div></div>
+<div id="dlg" class="modal"><div class="panel"><h2 id="dTitle"></h2><p id="dText"></p><input id="dInput" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"><div id="dBtns"></div></div></div>
+<input id="coverIn" type="file" accept="image/*" hidden>
+<div id="toast"></div>
+
+<div id="modModal" class="modal"><div id="modTip"></div><div class="panel wide"><h2>Modificadores</h2>
+  <p id="modMult"></p>
+  <div id="mods">
+    <div class="mrow g1"><b>Menos dificultad</b><div class="mic" style="--cols:4"><button data-m="slow" data-k="dn" data-tip="−20 % velocidad · ×0.30" aria-label="Lento"><i class="mi"><svg class="i" viewBox="0 0 24 24"><path d="M5 22h14"/><path d="M5 2h14"/><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"/><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"/></svg></i><b>Lento</b><small>−20 % velocidad</small><em>×0.30</em></button><button data-m="fewer" data-k="dn" data-tip="Baja la dificultad · ×0.50" aria-label="Menos notas"><i class="mi"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/></svg></i><b>Menos notas</b><small>Baja la dificultad</small><em>×0.50</em></button><button data-m="wide" data-k="dn" data-tip="Más margen para acertar · ×0.80" aria-label="Amplias"><i class="mi"><svg class="i" viewBox="0 0 24 24"><path d="m18 8 4 4-4 4"/><path d="M2 12h20"/><path d="m6 8-4 4 4 4"/></svg></i><b>Amplias</b><small>Más margen para acertar</small><em>×0.80</em></button><button data-m="nf" data-k="dn" data-tip="No pierdes al quedarte sin vida · ×0.50" aria-label="Sin fallo"><i class="mi"><svg class="i" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg></i><b>Sin fallo</b><small>No pierdes al quedarte sin vida</small><em>×0.50</em></button></div></div>
+    <div class="mrow g2"><b>Más dificultad</b><div class="mic" style="--cols:4"><button data-m="fast" data-k="up" data-tip="+25 % velocidad · ×1.10" aria-label="Rápido"><i class="mi"><svg class="i" viewBox="0 0 24 24"><path d="m6 17 5-5-5-5"/><path d="m13 17 5-5-5-5"/></svg></i><b>Rápido</b><small>+25 % velocidad</small><em>×1.10</em></button><button data-m="more" data-k="up" data-tip="Sube la dificultad · ×1.10" aria-label="Más notas"><i class="mi"><svg class="i" viewBox="0 0 24 24"><circle cx="7" cy="8" r="2"/><circle cx="17" cy="8" r="2"/><circle cx="12" cy="16" r="2"/></svg></i><b>Más notas</b><small>Sube la dificultad</small><em>×1.10</em></button><button data-m="hid" data-k="up" data-tip="Notas que se desvanecen · ×1.06" aria-label="Oculto"><i class="mi"><svg class="i" viewBox="0 0 24 24"><path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/><path d="m2 2 20 20"/></svg></i><b>Oculto</b><small>Notas que se desvanecen</small><em>×1.06</em></button><button data-m="strict" data-k="up" data-tip="Menos margen · ×1.06" aria-label="Estrictas"><i class="mi"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg></i><b>Estrictas</b><small>Menos margen</small><em>×1.06</em></button></div></div>
+    <div class="mrow g3"><b>Especiales</b><div class="mic" style="--cols:3"><button data-m="mirror" data-k="n" data-tip="Carriles invertidos · ×1.00" aria-label="Espejo"><i class="mi"><svg class="i" viewBox="0 0 24 24"><path d="M12 3v18"/><path d="m8 8-4 4 4 4"/><path d="m16 8 4 4-4 4"/></svg></i><b>Espejo</b><small>Carriles invertidos</small><em>×1.00</em></button><button data-m="rand" data-k="n" data-tip="Carriles mezclados · ×1.00" aria-label="Aleatorio"><i class="mi"><svg class="i" viewBox="0 0 24 24"><path d="m18 14 4 4-4 4"/><path d="m18 2 4 4-4 4"/><path d="M2 18h1.973a4 4 0 0 0 3.3-1.7l5.454-7.6a4 4 0 0 1 3.3-1.7H22"/><path d="M2 6h1.972a4 4 0 0 1 3.6 2.2"/><path d="M22 18h-6.041a4 4 0 0 1-3.3-1.8l-.359-.45"/></svg></i><b>Aleatorio</b><small>Carriles mezclados</small><em>×1.00</em></button><button data-m="auto" data-k="sp" data-tip="Juega solo, sin puntaje" aria-label="Auto"><i class="mi"><svg class="i" viewBox="0 0 24 24"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg></i><b>Auto</b><small>Juega solo, sin puntaje</small></button></div></div>
+  </div>
+  <div class="mfoot"><button id="modClear">Desactivar todos</button><button id="modOk">Cerrar</button></div></div></div>
+
+<!-- AJUSTES -->
+<div id="settings" class="modal"><div class="panel wide">
+  <div id="setHead"><div class="row1"><h2>Ajustes</h2><button id="setX" type="button" aria-label="Cerrar ajustes"><svg class="i" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div><input id="setSearch" type="text" placeholder="Buscar ajuste…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"><div id="setTabs">
+    <button data-cat="audio" aria-label="Audio"><svg class="i" viewBox="0 0 24 24"><path d="M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z"/><path d="M16 9a5 5 0 0 1 0 6"/><path d="M19.364 18.364a9 9 0 0 0 0-12.728"/></svg><span>Audio</span></button>
+    <button data-cat="gfx" aria-label="Gráficos"><svg class="i" viewBox="0 0 24 24"><path d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z"/><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/></svg><span>Gráficos</span></button>
+    <button data-cat="play" aria-label="Juego"><svg class="i" viewBox="0 0 24 24"><line x1="6" x2="10" y1="11" y2="11"/><line x1="8" x2="8" y1="9" y2="13"/><line x1="15" x2="15.01" y1="12" y2="12"/><line x1="18" x2="18.01" y1="10" y2="10"/><path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59c-.006.052-.01.101-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258-.007-.05-.011-.1-.017-.151A4 4 0 0 0 17.32 5z"/></svg><span>Juego</span></button>
+    <button data-cat="bg" aria-label="Fondo"><svg class="i" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg><span>Fondo</span></button>
+    <button data-cat="data" aria-label="Datos"><svg class="i" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg><span>Datos</span></button>
+  </div></div>
+
+  <label data-cat="play">Idioma <select id="sLang"><option value="es">Español</option><option value="en">English</option><option value="pt">Português</option><option value="fr">Français</option><option value="de">Deutsch</option></select></label>
+  <label data-cat="audio">Volumen general <output id="oVm"></output><input id="sVm" type="range" min="0" max="1" step="0.05"></label>
+  <label data-cat="audio">Volumen de la música <output id="oMu"></output><input id="sMu" type="range" min="0" max="1" step="0.05"></label>
+  <label data-cat="audio">Volumen del juego (efectos) <output id="oSfx"></output><input id="sSfx" type="range" min="0" max="1" step="0.05"></label>
+
+  <label data-cat="gfx">Calidad gráfica <select id="sQual"><option value="0">Auto: se ajusta sola según tu dispositivo</option><option value="1">Alta: máxima nitidez (más consumo)</option><option value="3">Media: equilibrio fijo</option><option value="2">Baja: más fluido, sin efectos extra</option></select></label>
+  <div data-cat="gfx" class="settingBlock cw" id="cwSkin">
+    <span class="blockTitle">Color de notas</span>
+    <div class="cwRow">
+      <div class="cwWheel" role="slider" aria-label="Color de notas"><i class="cwDot"></i></div>
+      <div class="cwSide">
+        <div class="cwChips"><button type="button"><i></i><span>Normales</span></button><button type="button"><i></i><span>Largas</span></button></div>
+        <label class="cwL"><span>Brillo</span><input class="cwLight" type="range" min="35" max="100" step="1"></label>
+        <code class="cwHex"></code>
+      </div>
+    </div>
+    <div class="cwPresets"></div>
+  </div>
+  <div data-cat="gfx" class="settingBlock cw" id="cwAccent">
+    <span class="blockTitle">Color de la interfaz</span>
+    <div class="cwRow">
+      <div class="cwWheel" role="slider" aria-label="Color de la interfaz"><i class="cwDot"></i></div>
+      <div class="cwSide">
+        <div class="cwChips"><button type="button"><i></i><span>Principal</span></button><button type="button"><i></i><span>Secundario</span></button></div>
+        <label class="cwL"><span>Brillo</span><input class="cwLight" type="range" min="35" max="100" step="1"></label>
+        <code class="cwHex"></code>
+      </div>
+    </div>
+    <div class="cwPresets"></div>
+  </div>
+  <label data-cat="gfx" class="chk"><input id="sN3d" type="checkbox"> Notas en 3D</label>
+  <label data-cat="gfx">Forma de las notas <select id="sShape"><option value="round">Redondeadas</option><option value="circle">Circulares</option><option value="sharp">Cuadradas</option></select></label>
+  <label data-cat="gfx" class="chk"><input id="sHitFx" type="checkbox"> Animación al golpear la nota</label>
+  <label data-cat="gfx" class="chk"><input id="sFps30" type="checkbox"> Limitar a 30 FPS (para celulares lentos)</label>
+  <label data-cat="gfx">Rendimiento <select id="sPerf"><option value="0">Auto: se ajusta sola</option><option value="1">Ahorro: para equipos lentos</option><option value="2">Completo: todos los efectos</option><option value="3">Mínimo: para equipos muy lentos</option></select></label>
+  <label data-cat="gfx" class="chk"><input id="sCb" type="checkbox"> Modo daltónico (colores de notas contrastados)</label>
+  <label data-cat="gfx">Tamaño del texto <output id="oUis"></output><input id="sUis" type="range" min="90" max="140" step="10"></label>
+  <label data-cat="gfx">Opacidad de la pista <output id="oLane"></output><input id="sLane" type="range" min="0" max="100" step="5"></label>
+  <label data-cat="gfx">Opacidad del círculo (HUD) <output id="oRing"></output><input id="sRing" type="range" min="0" max="100" step="5"></label>
+  <label data-cat="gfx">Tamaño de notas <output id="oSize"></output><input id="sSize" type="range" min="48" max="88" step="4"></label>
+
+  <label data-cat="play">Velocidad de las notas <output id="oSpeed"></output><input id="sSpeed" type="range" min="0.5" max="4" step="0.1"></label>
+  <label data-cat="play">Compensación de latencia <output id="oLat"></output><input id="sLat" type="range" min="-300" max="300" step="5"></label>
+  <button data-cat="play" id="btnCalib">Calibrar latencia automáticamente</button>
+  <label data-cat="play" class="chk"><input id="sVib" type="checkbox"> Vibración al acertar</label>
+  <label data-cat="play" class="chk"><input id="sAuto" type="checkbox"> Sincronía automática (se ajusta sola con cómo tocas)</label>
+  <label data-cat="audio" class="chk"><input id="sTap" type="checkbox"> Sonido de las notas al tocar</label>
+  <label data-cat="play" class="chk"><input id="sPrev" type="checkbox"> Escuchar un adelanto al elegir canción</label>
+  <div data-cat="play" class="settingBlock">
+    <span class="blockTitle">Modo práctica</span>
+    <label class="chk"><input id="sPrac" type="checkbox"> Activar (no guarda récords ni XP)</label>
+    <label>Empezar desde <select id="sPracAt"><option value="0">El inicio</option><option value="25">25 %</option><option value="50">50 %</option><option value="75">75 %</option></select></label>
+  </div>
+  <label data-cat="play">Tamaño del botón de pausa <output id="oPauseSize"></output><input id="sPauseSize" type="range" min="38" max="80" step="4"></label>
+  <label data-cat="play">Tamaño del HUD <output id="oHud"></output><input id="sHud" type="range" min="70" max="150" step="5"></label>
+  <div data-cat="play" class="hudprev"><canvas id="hudPrev" width="300" height="270"></canvas></div>
+  <label data-cat="play">Posición del botón de pausa <select id="sPausePos">
+    <option value="pause-top-right">Arriba a la derecha</option>
+    <option value="pause-top-left">Arriba a la izquierda</option>
+    <option value="pause-bot-right">Abajo a la derecha</option>
+    <option value="pause-bot-left">Abajo a la izquierda</option>
+  </select></label>
+
+  <label data-cat="bg" class="chk"><input id="sCover" type="checkbox"> Mostrar la portada de fondo</label>
+  <label data-cat="bg" class="chk"><input id="sVideo" type="checkbox"> Video de fondo en la partida</label>
+  <label data-cat="bg">Tema de fondo<select id="sTheme"><option value="menta">Menta</option><option value="atardecer">Atardecer</option><option value="oceano">Océano</option><option value="violeta">Violeta</option><option value="carbon">Carbón</option><option value="ambar">Ámbar</option></select></label>
+  <label data-cat="bg">Encuadre del video<select id="sVfit"><option value="auto">Automático (recomendado)</option><option value="contain">Ver completo (con bordes difuminados)</option><option value="cover">Llenar la pantalla (recorta los lados)</option></select></label>
+  <label data-cat="bg">Posición del encuadre<select id="sVpos"><option value="0">Izquierda</option><option value="50">Centro</option><option value="100">Derecha</option></select></label>
+  <label data-cat="bg">Atenuación del fondo <output id="oDim"></output><input id="sDim" type="range" min="0" max="1" step="0.05"></label>
+  <div data-cat="bg" class="settingBlock">
+    <span class="blockTitle">Imagen de ambiente personalizada</span>
+    <div class="row" style="gap:8px">
+      <label class="btn" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;text-align:center"><svg class="i" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg> Elegir imagen<input id="bgImgIn" type="file" accept="image/*" hidden></label>
+      <button id="bgImgClear">Quitar</button>
+    </div>
+    <small id="bgImgInfo" style="color:var(--mut)"></small>
+  </div>
+
+  <button data-cat="play" id="btnTutS">Repetir tutorial</button>
+  <div data-cat="data" class="settingBlock">
+    <span class="blockTitle">Copia de seguridad</span>
+    <p class="setNote">Guarda tus récords, favoritas, listas, nivel y ajustes en un archivo y cárgalo en otro celular. No incluye las canciones.</p>
+    <div class="row" style="gap:8px"><button id="btnBkExp" type="button">Guardar copia</button><label class="btn" style="flex:1;display:flex;align-items:center;justify-content:center;text-align:center">Cargar copia<input id="bkIn" type="file" accept=".json,application/json" hidden></label></div>
+  </div>
+  <button id="btnCloseSet" class="play sm">Cerrar</button>
+</div></div>
+
+<div id="profSetup" class="modal"><div class="panel ps">
+  <span class="pavWrap"><i class="pav" id="psAv">B</i><button type="button" class="pavEdit" id="psPhoto" aria-label="Elegir foto"><svg class="i" viewBox="0 0 24 24"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg></button></span>
+  <small>Bienvenido a BeatWave</small>
+  <h2>Crea tu perfil</h2>
+  <p>¿Cómo quieres que te llamen? Escribe tu nombre o deja que BeatWave te invente uno.</p>
+  <input id="psName" type="text" maxlength="16" placeholder="Tu nombre" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="done">
+  <button id="psRand" type="button" class="psb"><svg class="i" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><path d="M16 8h.01"/><path d="M8 8h.01"/><path d="M8 16h.01"/><path d="M16 16h.01"/><path d="M12 12h.01"/></svg><span>Nombre aleatorio</span></button>
+  <button id="psGo" type="button" class="play">Continuar</button>
+</div></div>
+
+
+<input id="pfpIn" type="file" accept="image/*" hidden>
+<div id="cropModal" class="modal"><div class="panel cropP">
+  <h2>Ajusta tu foto</h2>
+  <p>Arrastra para mover y pellizca o usa el control para acercar.</p>
+  <div id="cropBox"><canvas id="cropCv"></canvas><div id="cropMask"></div></div>
+  <input id="cropZoom" type="range" min="1" max="4" step="0.01" value="1" aria-label="Zoom">
+  <div class="cropBtns"><button id="cropCancel" type="button" class="alt">Cancelar</button><button id="cropOk" type="button" class="play sm">Listo</button></div>
+</div></div>
+
+
+<div id="reviveModal" class="modal"><div class="panel reviveP">
+  <h2>¡Te quedaste sin vida!</h2>
+  <p>¿Quieres seguir desde donde ibas?</p>
+  <div class="reviveBal"><svg class="i" viewBox="0 0 24 24"><circle cx="8" cy="8" r="6"/><path d="M18.09 10.37A6 6 0 1 1 10.34 18"/><path d="M7 6h1v4"/><path d="m16.71 13.88.7.71-2.82 2.82"/></svg><b class="coinN">0</b><span>monedas</span></div>
+  <button id="revCoin" type="button" class="revMain">Revivir · <span id="revCost">10</span> monedas</button>
+  <button id="revAd" type="button">Ver un anuncio y revivir gratis</button>
+  <button id="revNo" type="button" class="alt">Terminar la canción</button>
+  <small id="revLeft"></small>
+</div></div>
+<div id="fakeAd" class="modal"><div class="panel fakeP"><small>ANUNCIO DE PRUEBA</small><div class="fakeBox">Aquí saldría un anuncio en video</div><button id="fadX" type="button" disabled>Espera 5 s</button></div></div>
+
+<div id="acctModal" class="modal"><div class="panel">
+  <h2>Tu perfil</h2>
+  <div class="acCard"><span class="pavWrap"><i class="pav" id="acAv">I</i><button type="button" class="pavEdit" id="acPhoto" aria-label="Cambiar foto"><svg class="i" viewBox="0 0 24 24"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg></button></span><div><b id="acUser"></b><small id="acLv"></small></div></div>
+  <input id="acName" type="text" placeholder="Tu nombre" maxlength="24" autocomplete="nickname">
+  <button id="acNoPhoto" type="button" class="alt" style="display:none">Quitar foto</button>
+  <button id="acGo" class="play sm">Guardar</button>
+  <button id="acClose" class="alt">Cerrar</button>
+</div></div>
+<div id="bye"><div><h2>¡Hasta la próxima!</h2><p>Tu progreso está guardado.</p><small>Para cerrar BeatWave, desliza hacia arriba o usa el botón de inicio de tu teléfono.</small><button id="byeBack" class="play sm">Volver al juego</button></div></div>
+<script src="script.js"></script>
+<div id="tour" aria-live="polite"><div id="tHole"></div><div id="tCard"><small id="tN"></small><b id="tT"></b><p id="tP"></p><div id="tBtns"><button id="tSkip" type="button">Saltar recorrido</button><button id="tNext" type="button">Siguiente</button></div></div></div>
+</body>
+</html>

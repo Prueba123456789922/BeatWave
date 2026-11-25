@@ -1,0 +1,37 @@
+{
+  "name": "BeatWave",
+  "short_name": "BeatWave",
+  "description": "Juego de ritmo para el celular: sube tu canción y BeatWave crea el nivel.",
+  "start_url": "./",
+  "display": "fullscreen",
+  "orientation": "portrait",
+  "background_color": "#0D0D11",
+  "theme_color": "#0D0D11",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "id": "./",
+  "scope": "./",
+  "lang": "es",
+  "display_override": [
+    "fullscreen",
+    "standalone"
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "appId": "com.lixander.beatwave",
+  "appName": "BeatWave",
+  "webDir": "www",
+  "backgroundColor": "#0B0B0F",
+  "server": { "androidScheme": "https" },
+  "android": { "allowMixedContent": false, "backgroundColor": "#0B0B0F" }
+}

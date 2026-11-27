@@ -45,8 +45,8 @@ const isLT = () => S.skin === 4 && !S.skinC;
 function applySkin() { const k = S.skinC || SKINS[S.skin] || SKINS[0]; COL[0] = COL[2] = k[0]; COL[1] = k[1]; if (S.cb) { COL[0] = COL[2] = '#56B4E9'; COL[1] = '#F0A30A'; } }
 const lite2 = () => S.perf === 1 || S.perf === 3 || (S.perf !== 2 && !!S.autoLite);
 const minTier = () => S.perf === 3 || (S.perf === 0 && !!S.autoMin); // «Mínimo»: para equipos muy lentos
-if (NATIVE && (S.perfInit || 0) < 2) { S.perfInit = 2; if (S.perf === 2 || !S.perf) { S.perf = 0; S.autoLite = true; } try { localStorage.setItem('bwsettings', JSON.stringify(S)); } catch (e) {} }
-function applyPerf() { LOW = S.perf === 1 || S.perf === 3 || (S.perf !== 2 && (HW_LOW || !!S.autoLite)); const h = document.documentElement.classList; h.toggle('lite', LOW); h.toggle('lite2', lite2()); h.toggle('lite3', minTier()); }
+if (NATIVE && (S.perfInit || 0) < 3) { S.perfInit = 3; if (S.perf === 2 || !S.perf) { S.perf = 0; S.autoLite = true; } try { localStorage.setItem('bwsettings', JSON.stringify(S)); } catch (e) {} }
+function applyPerf() { LOW = S.perf === 1 || S.perf === 3 || (S.perf !== 2 && (HW_LOW || !!S.autoLite)); const h = document.documentElement.classList; h.toggle('lite', LOW); h.toggle('lite2', lite2()); h.toggle('lite3', minTier()); h.toggle('nofx', NATIVE || LOW); }
 function applyUis() { document.documentElement.style.fontSize = Math.round((S.uis || 1) * 100) + '%'; }
 function perfWatch(f, el) { if (!loadedAll || S.perf !== 0 || S.autoLite || document.hidden || el > 1500) { lowSec = 0; return; } lowSec = f < 20 ? lowSec + 1 : 0; if (lowSec >= 5) { S.autoLite = true; saveSettings(); applyPerf(); msg('Modo ahorro activado para que todo vaya más fluido. Puedes cambiarlo en Ajustes → Gráficos.'); } }
 function applyAccent() {

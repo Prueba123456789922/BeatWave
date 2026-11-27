@@ -36,6 +36,16 @@ jobs:
       - name: Compilar APK
         run: ./gradlew assembleDebug
         working-directory: android
+      - name: Comprobar que el APK lleva el icono de BeatWave
+        run: |
+          ls -la android/app/src/main/res/mipmap-xxxhdpi/
+          AAPT=$(ls $ANDROID_HOME/build-tools/*/aapt2 2>/dev/null | tail -1)
+          if [ -n "$AAPT" ]; then $AAPT dump badging android/app/build/outputs/apk/debug/app-debug.apk | grep -E "application-icon|launchable-activity" || true; fi
+          unzip -l android/app/build/outputs/apk/debug/app-debug.apk | grep -i -E "ic_launcher|splash" || true
+      - uses: actions/upload-artifact@v4
+        with:
+          name: BeatWave-icono
+          path: android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
       - uses: actions/upload-artifact@v4
         with:
           name: BeatWave-debug-apk

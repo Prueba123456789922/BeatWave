@@ -25,7 +25,8 @@ if (!CanvasRenderingContext2D.prototype.roundRect) CanvasRenderingContext2D.prot
 };
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 
-const HW_LOW = (navigator.deviceMemory || 4) <= 3 || (navigator.hardwareConcurrency || 8) <= 4;
+const NATIVE = !!(window.Capacitor && Capacitor.isNativePlatform && Capacitor.isNativePlatform());
+const HW_LOW = NATIVE || (navigator.deviceMemory || 4) <= 3 || (navigator.hardwareConcurrency || 8) <= 4; // en la app Android se empieza ligero; puedes subir la calidad en Ajustes → Gráficos
 let LOW = HW_LOW, loadedAll = false, menuSkip = 0, lowSec = 0, vzCol = null, vzColT = 0;
 
 const S = Object.assign({
@@ -44,6 +45,7 @@ const isLT = () => S.skin === 4 && !S.skinC;
 function applySkin() { const k = S.skinC || SKINS[S.skin] || SKINS[0]; COL[0] = COL[2] = k[0]; COL[1] = k[1]; if (S.cb) { COL[0] = COL[2] = '#56B4E9'; COL[1] = '#F0A30A'; } }
 const lite2 = () => S.perf === 1 || S.perf === 3 || (S.perf !== 2 && !!S.autoLite);
 const minTier = () => S.perf === 3 || (S.perf === 0 && !!S.autoMin); // «Mínimo»: para equipos muy lentos
+if (NATIVE && !S.perfInit) { S.perfInit = 1; if (!S.perf) S.autoLite = true; try { localStorage.setItem('bwsettings', JSON.stringify(S)); } catch (e) {} }
 function applyPerf() { LOW = S.perf === 1 || S.perf === 3 || (S.perf !== 2 && (HW_LOW || !!S.autoLite)); const h = document.documentElement.classList; h.toggle('lite', LOW); h.toggle('lite2', lite2()); h.toggle('lite3', minTier()); }
 function applyUis() { document.documentElement.style.fontSize = Math.round((S.uis || 1) * 100) + '%'; }
 function perfWatch(f, el) { if (!loadedAll || S.perf !== 0 || S.autoLite || document.hidden || el > 1500) { lowSec = 0; return; } lowSec = f < 20 ? lowSec + 1 : 0; if (lowSec >= 5) { S.autoLite = true; saveSettings(); applyPerf(); msg('Modo ahorro activado para que todo vaya más fluido. Puedes cambiarlo en Ajustes → Gráficos.'); } }
@@ -1029,12 +1031,16 @@ function menuFrame() {
   { const w = (Math.min(1, prog) * 100).toFixed(1) + '%'; if (w !== MF.pw) { MF.pw = w; MF.prog.style.width = w; } }
   const ow = MF.ow || (MF.ow = orb.offsetWidth || 320), c0 = vizS / 2, k = ow / 320, hw = ow / 2 * sc, N = LOW ? 48 : 72, r0 = hw * 1.07 + 6 * k;
   if (!vzCol || now - vzColT > 1500) { const cs = getComputedStyle(document.documentElement); vzCol = [cs.getPropertyValue('--accent').trim() || '#63F2A8', cs.getPropertyValue('--accent2').trim() || '#4D8DF5']; vzColT = now; }
-  vc.clearRect(0, 0, vizS, vizS); let vmax = 0; const N2 = LOW ? 24 : 36, bw = 2 * hw / N2, yb = c0 + hw + 14 * k;
-  const gr = vc.createLinearGradient(c0 - hw, 0, c0 + hw, 0); gr.addColorStop(0, '#FF4D8D'); gr.addColorStop(.5, vzCol[0]); gr.addColorStop(1, '#FFD166'); vc.fillStyle = gr;
-  for (let i = 0; i < N2; i++) { // ecualizador bajo el logo: la forma de una ola que late con la música
-    const m = i < N2 / 2 ? i : N2 - 1 - i, nz = Math.abs(Math.sin(t * 2.2 + m * .83)) * Math.abs(Math.cos(t * 1.4 + m * .31)), tg = (en || 0) * (.2 + .8 * nz) * (1 + pulse * .8);
-    vzh[i] += (tg - vzh[i]) * (tg > vzh[i] ? .5 : .12); if (vzh[i] > vmax) vmax = vzh[i];
-    const bh = (4 + 40 * vzh[i]) * k, x = c0 - hw + i * bw + bw * .17, w = bw * .66; vc.beginPath(); if (vc.roundRect) vc.roundRect(x, yb, w, bh, w * .45); else vc.rect(x, yb, w, bh); vc.fill();
+  vc.clearRect(0, 0, vizS, vizS); let vmax = 0; const N3 = N / 3, cols = ['#FF4D8D', vzCol[0], '#FFD166']; vc.lineWidth = Math.max(3, r0 * 2 * Math.PI / N * .52); vc.lineCap = 'round';
+  for (let q = 0; q < 3; q++) { // tres abanicos, uno por carril (rosa, cian y amarillo), con huecos entre ellos
+    vc.strokeStyle = cols[q]; vc.beginPath();
+    for (let j = 0; j < N3; j++) {
+      const i = q * N3 + j, m = i < N / 2 ? i : N - 1 - i, nz = Math.abs(Math.sin(t * 2.2 + m * .83)) * Math.abs(Math.cos(t * 1.4 + m * .31)), tg = (en || 0) * (.2 + .8 * nz) * (1 + pulse * .8);
+      vzh[i] += (tg - vzh[i]) * (tg > vzh[i] ? .5 : .12); if (vzh[i] > vmax) vmax = vzh[i];
+      if (j === 0 || j === N3 - 1) continue;
+      const a = i / N * Math.PI * 2 - Math.PI / 2, bh = (4 + 50 * vzh[i]) * k, ca = Math.cos(a), sa = Math.sin(a); vc.moveTo(c0 + ca * r0, c0 + sa * r0); vc.lineTo(c0 + ca * (r0 + bh), c0 + sa * (r0 + bh));
+    }
+    vc.stroke();
   }
   MF.still = vmax < .02;
   menuRaf = requestAnimationFrame(menuFrame);
@@ -1975,10 +1981,19 @@ const _si = Storage.prototype.setItem; Storage.prototype.setItem = function (k, 
 /* ---- Perfil (solo en este dispositivo) ---- */
 const scheduleSync = () => {}, cloudSync = async () => {};
 function openAcct() {
-  const name = localStorage.getItem('bwname') || '', xp = getXp(), lv = xpLevel(xp), st = JSON.parse(localStorage.getItem(STK) || '{"n":0}');
+  const name = localStorage.getItem('bwname') || '', xp = getXp(), lv = xpLevel(xp), st = jget(STATK, { plays: 0, hits: 0 }), sk = jget(STK, { n: 0 }) || { n: 0 }, H = jget(HISTK, []);
   $('#acName').value = name; $('#acAv').textContent = ((name || 'I')[0]).toUpperCase(); $('#acUser').textContent = name || 'Invitado';
-  $('#acLv').textContent = `Nivel ${lv} · ${xp.toLocaleString()} XP` + (st.n > 1 ? ` · racha de ${st.n} días` : '');
-  applyPfp(); $('#acctModal').classList.add('open');
+  const lo = 120 * (lv - 1) ** 2, hi = 120 * lv ** 2; $('#acLv').textContent = `Nivel ${lv}`; $('#acXpBar').style.width = Math.max(2, Math.min(100, (xp - lo) / (hi - lo) * 100)) + '%'; $('#acXpTxt').textContent = `${xp.toLocaleString()} XP · faltan ${(hi - xp).toLocaleString()} para el nivel ${lv + 1}`;
+  const accs = H.map(x => x.a).filter(x => typeof x === 'number'), avg = accs.length ? accs.reduce((p, q) => p + q, 0) / accs.length : 0;
+  const best = f => H.length ? Math.max(...H.map(x => +x[f] || 0)) : 0, since = H.length ? new Date(Math.min(...H.map(x => x.d))).toLocaleDateString() : '—';
+  const lib = songs.filter(x => !HID.includes(x.id) && !TRASH.includes(x.id)).length, favs = Object.values(FAV).filter(Boolean).length, got = Object.keys(jget(ACHK, {})).length, md = (misGet().done) || 0;
+  const cards = [['Partidas jugadas', (st.plays || 0).toLocaleString()], ['Golpes acertados', (st.hits || 0).toLocaleString()], ['Precisión media', accs.length ? avg.toFixed(1) + ' %' : '—'], ['Mejor precisión', accs.length ? Math.min(100, best('a')).toFixed(2) + ' %' : '—'],
+    ['Mejor combo', best('c') ? best('c').toLocaleString() + '×' : '—'], ['Mejor puntaje', best('s') ? best('s').toLocaleString() : '—'], ['Canciones', lib], ['Favoritas', favs],
+    ['Logros', `${got} / ${ACH.length}`], ['Misiones hechas', md], ['Monedas', getCoins().toLocaleString()], ['Racha de días', sk.n || 0], ['Jugando desde', since]];
+  const g = $('#acStats'); g.innerHTML = ''; cards.forEach(([k, v]) => { const d = el('div'); d.append(el('b', '', String(v)), el('small', '', k)); g.append(d); });
+  const cnt = {}; Object.values(REC).forEach(r => { if (r && r.rank) cnt[r.rank] = (cnt[r.rank] || 0) + 1; });
+  const rk = $('#acRanks'); rk.innerHTML = ''; ['SS', 'S★', 'S', 'A', 'B', 'C', 'D'].forEach(r => { const c = el('span', cnt[r] ? '' : 'z'); c.style.setProperty('--c', RC[r]); c.innerHTML = `<i>${rkh(r)}</i><b>${cnt[r] || 0}</b>`; rk.append(c); });
+  applyPfp(); $('#acctModal').classList.add('open'); $('#acctModal .panel').scrollTop = 0;
 }
 $('#profile').addEventListener('click', openAcct); $('#acClose').onclick = () => $('#acctModal').classList.remove('open');
 $('#acGo').onclick = () => { const n = $('#acName').value.trim().slice(0, 24); if (n) lsSet('bwname', n); else localStorage.removeItem('bwname'); renderProfile(); $('#acctModal').classList.remove('open'); msg('Nombre guardado'); };
@@ -2075,6 +2090,33 @@ $('#psGo').onclick = () => {
   addEventListener('pointerup', go, true);
 })();
 
+
+/* ===== Diagnóstico de rendimiento (mide tu teléfono por partes) ===== */
+async function runDiag() {
+  const out = $('#diagOut'), st = $('#diagSt'), line = t => { out.textContent += t + '\n'; };
+  out.textContent = ''; $('#diagCopy').style.display = 'none'; st.textContent = 'Midiendo… no toques la pantalla (unos 10 segundos).'; $('#diagModal').classList.add('open');
+  const ua = navigator.userAgent, ch = (ua.match(/Chrome\/(\d+)/) || [])[1];
+  line(`Teléfono: ${(ua.match(/\(Linux; Android ([^;)]+)(?:; ([^)]+))?\)/) || []).slice(1).join(' · ') || 'desconocido'}`);
+  line(`WebView/Chrome: ${ch || '?'} · núcleos: ${navigator.hardwareConcurrency || '?'} · RAM: ${navigator.deviceMemory || '?'} GB`);
+  line(`Pantalla: ${innerWidth}×${innerHeight} · ratio ${devicePixelRatio} · modo: ${NATIVE ? 'app' : 'web'} · ahorro: ${LOW ? 'sí' : 'no'}`);
+  const frames = (ms, draw) => new Promise(r => { let c = 0, t0 = 0, last = 0, mx = 0; const f = t => { if (!t0) { t0 = last = t; } c++; mx = Math.max(mx, t - last); last = t; if (draw) draw(c); if (t - t0 < ms) requestAnimationFrame(f); else r({ fps: (c - 1) * 1000 / (t - t0), mx }); }; requestAnimationFrame(f); });
+  const fmt = r => `${r.fps.toFixed(0)} FPS (peor fotograma ${r.mx.toFixed(0)} ms)`;
+  const cv = document.createElement('canvas'); cv.style.cssText = 'position:fixed;left:0;top:0;width:100vw;height:100vh;z-index:9999;pointer-events:none;opacity:.001'; cv.width = innerWidth; cv.height = innerHeight; document.body.append(cv);
+  const g = cv.getContext('2d'), W = cv.width, H = cv.height;
+  line(''); line('Velocidad de la pantalla y del dibujo:');
+  line('• Pantalla vacía: ' + fmt(await frames(1500)));
+  line('• 200 rectángulos: ' + fmt(await frames(1500, () => { g.clearRect(0, 0, W, H); for (let i = 0; i < 200; i++) { g.fillStyle = i % 2 ? '#00E5FF' : '#B388FF'; g.fillRect((i * 37) % W, (i * 61) % H, 40, 40); } })));
+  line('• 120 notas con degradado: ' + fmt(await frames(1500, () => { g.clearRect(0, 0, W, H); for (let i = 0; i < 120; i++) { const x = (i * 53) % W, y = (i * 97) % H, gr = g.createLinearGradient(x, y, x, y + 40); gr.addColorStop(0, '#FF7BB0'); gr.addColorStop(1, '#FF3D7F'); g.fillStyle = gr; g.beginPath(); if (g.roundRect) g.roundRect(x, y, 56, 40, 10); else g.rect(x, y, 56, 40); g.fill(); } })));
+  line('• 40 formas con brillo (sombra): ' + fmt(await frames(1500, () => { g.clearRect(0, 0, W, H); g.shadowColor = '#00E5FF'; g.shadowBlur = 14; g.fillStyle = '#00E5FF'; for (let i = 0; i < 40; i++) g.fillRect((i * 71) % W, (i * 113) % H, 50, 30); g.shadowBlur = 0; })));
+  line('• 40 textos: ' + fmt(await frames(1500, () => { g.clearRect(0, 0, W, H); g.fillStyle = '#fff'; g.font = '700 20px sans-serif'; for (let i = 0; i < 40; i++) g.fillText('PERFECT ' + i, (i * 83) % W, (i * 47) % H + 20); })));
+  cv.remove();
+  try { init(); const c = ctx; const t0 = performance.now(); for (let i = 0; i < 1000; i++) c.getOutputTimestamp(); const t1 = performance.now(); for (let i = 0; i < 1000; i++) void c.currentTime; const t2 = performance.now();
+    line(''); line('Audio:'); line(`• Leer la hora del audio: ${((t1 - t0) / 1000).toFixed(3)} ms por lectura (normal: menos de 0.05)`); line(`• Estado: ${c.state} · latencia de salida: ${((c.outputLatency || c.baseLatency || 0) * 1000).toFixed(0)} ms`); } catch (e) { line('• Audio: no se pudo medir'); }
+  st.textContent = 'Listo. Mándame una captura de esta pantalla.'; $('#diagCopy').style.display = '';
+}
+$('#btnDiag').onclick = runDiag; $('#diagClose').onclick = () => $('#diagModal').classList.remove('open');
+$('#diagCopy').onclick = () => { try { navigator.clipboard.writeText($('#diagOut').textContent); msg('Copiado'); } catch (e) { msg('No se pudo copiar; haz una captura.'); } };
+
 /* ===== Reloj propio: no depende de la fecha que pongas en el teléfono ===== */
 const BWC = (() => {
   let A = null, busy = false; const mono = () => performance.now();
@@ -2114,32 +2156,28 @@ function awardCoins(g, a) { // más dificultad y más modificadores = más moned
 }
 
 /* ===== Anuncios (AdMob en el APK; en la web solo un anuncio de prueba) ===== */
-const ADS = { testing: true, fakeOnWeb: true, banner: 'ca-app-pub-3940256099942544/6300978111', rewarded: 'ca-app-pub-3940256099942544/5224354917' };
-// ↑ IDs de PRUEBA de Google. Para ganar dinero real: crea tu cuenta de AdMob, cambia estos dos IDs, el ID de la app (en tools/patch-android.js) y pon testing: false.
+const ADS = { testing: true, banner: 'ca-app-pub-3940256099942544/6300978111', rewarded: 'ca-app-pub-3940256099942544/5224354917' };
+// Los IDs reales se leen de ads.config.json (ahí pones los de TU cuenta de AdMob). Si faltan, se usan los de prueba de Google.
+const ADS_READY = fetch('ads.config.json', { cache: 'no-store' }).then(r => r.ok ? r.json() : null).then(j => { if (j) { for (const k of ['banner', 'rewarded']) if (j[k]) ADS[k] = j[k]; if (typeof j.testing === 'boolean') ADS.testing = j.testing; } }).catch(() => {});
+const isTestId = x => String(x).includes('3940256099942544'), testFor = x => ADS.testing || isTestId(x);
 const AdP = () => window.Capacitor && Capacitor.Plugins && Capacitor.Plugins.AdMob;
 const setAdH = h => document.documentElement.style.setProperty('--adh', (h || 0) + 'px');
 const Ads = {
   ready: false, on: false,
-  available() { return !!AdP() || ADS.fakeOnWeb; },
-  async init() { const A = AdP(); if (!A || this.ready) return; try { await A.initialize({ initializeForTesting: ADS.testing }); this.ready = true; A.addListener('bannerAdSizeChanged', i => setAdH(i && i.height)); } catch (e) {} },
+  available() { return !!AdP(); }, // solo en la app Android (en la web no hay anuncios)
+  async init() { const A = AdP(); if (!A || this.ready) return; await ADS_READY; try { await A.initialize({ initializeForTesting: ADS.testing }); this.ready = true; A.addListener('bannerAdSizeChanged', i => setAdH(i && i.height)); } catch (e) {} },
   async banner(show) { // anuncio pequeño abajo, solo fuera de la partida
     const A = AdP(); if (!A) return; await this.init(); if (!this.ready) return;
-    if (show && !this.on) { this.on = true; try { await A.showBanner({ adId: ADS.banner, adSize: 'ADAPTIVE_BANNER', position: 'BOTTOM_CENTER', margin: 0, isTesting: ADS.testing }); } catch (e) { this.on = false; } }
+    if (show && !this.on) { this.on = true; try { await A.showBanner({ adId: ADS.banner, adSize: 'ADAPTIVE_BANNER', position: 'BOTTOM_CENTER', margin: 0, isTesting: testFor(ADS.banner) }); } catch (e) { this.on = false; } }
     else if (!show && this.on) { this.on = false; try { await A.removeBanner(); } catch (e) {} setAdH(0); }
   },
   async rewarded() { // anuncio que el jugador elige ver: devuelve true si se ganó la recompensa
-    const A = AdP(); if (!A) return ADS.fakeOnWeb ? fakeAd() : false; await this.init();
+    const A = AdP(); if (!A) return false; await this.init();
     let got = false; const h = await A.addListener('onRewardedVideoAdReward', () => { got = true; });
-    try { await A.prepareRewardVideoAd({ adId: ADS.rewarded, isTesting: ADS.testing }); const r = await A.showRewardVideoAd(); got = got || !!(r && (r.amount || r.type)); } catch (e) { msg('No hay anuncios disponibles ahora. Inténtalo más tarde.'); }
+    try { await A.prepareRewardVideoAd({ adId: ADS.rewarded, isTesting: testFor(ADS.rewarded) }); const r = await A.showRewardVideoAd(); got = got || !!(r && (r.amount || r.type)); } catch (e) { msg('No hay anuncios disponibles ahora. Inténtalo más tarde.'); }
     try { h && h.remove(); } catch (e) {} return got;
   }
 };
-function fakeAd() { // solo para probar en la web
-  return new Promise(ok => { const m = $('#fakeAd'), b = $('#fadX'); let n = 5; m.classList.add('open'); b.disabled = true; b.textContent = 'Espera ' + n + ' s';
-    const iv = setInterval(() => { n--; if (n > 0) b.textContent = 'Espera ' + n + ' s'; else { clearInterval(iv); b.disabled = false; b.textContent = 'Recibir recompensa'; } }, 1000);
-    b.onclick = () => { clearInterval(iv); m.classList.remove('open'); ok(n <= 0); }; });
-}
-
 /* ===== Revivir al quedarte sin vida ===== */
 function reviveOffer() {
   if (!G || G.rp || G.prac || (G.revives | 0) >= REV_MAX) return false;
@@ -2155,8 +2193,8 @@ $('#revAd').onclick = async () => { const b = $('#revAd'); b.disabled = true; co
 $('#revNo').onclick = endRevive;
 $('#coinChip').onclick = async () => {
   const last = +localStorage.getItem('bwadlast') || 0, wait = 120000 - (BWC.now() - last);
-  const r = await dlg('Monedas', `Tienes ${getCoins().toLocaleString()} monedas. Las ganas al terminar canciones (más con dificultad y modificadores) y sirven para revivir.`, { btns: [wait > 0 ? `Anuncio disponible en ${Math.ceil(wait / 1000)} s` : 'Ver un anuncio (+10 monedas)', 'Cerrar'] });
-  if (r.i !== 0 || wait > 0) return; if (await Ads.rewarded()) { setCoins(getCoins() + 10); lsSet('bwadlast', String(BWC.now())); msg('+10 monedas'); }
+  const hasAd = Ads.available(); const r = await dlg('Monedas', `Tienes ${getCoins().toLocaleString()} monedas. Las ganas al terminar canciones (más con dificultad y modificadores) y sirven para revivir.`, { btns: hasAd ? [wait > 0 ? `Anuncio disponible en ${Math.ceil(wait / 1000)} s` : 'Ver un anuncio (+10 monedas)', 'Cerrar'] : ['Cerrar'] });
+  if (!hasAd || r.i !== 0 || wait > 0) return; if (await Ads.rewarded()) { setCoins(getCoins() + 10); lsSet('bwadlast', String(BWC.now())); msg('+10 monedas'); }
 };
 paintCoins();
 

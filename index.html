@@ -324,6 +324,7 @@
   <label data-cat="gfx" class="chk"><input id="sHitFx" type="checkbox"> Animación al golpear la nota</label>
   <label data-cat="gfx" class="chk"><input id="sFps30" type="checkbox"> Limitar a 30 FPS (para celulares lentos)</label>
   <label data-cat="gfx">Rendimiento <select id="sPerf"><option value="0">Auto: se ajusta sola</option><option value="1">Ahorro: para equipos lentos</option><option value="2">Completo: todos los efectos</option><option value="3">Mínimo: para equipos muy lentos</option></select></label>
+  <button data-cat="gfx" id="btnDiag" type="button" class="diagBtn">Probar el rendimiento de mi teléfono</button>
   <label data-cat="gfx" class="chk"><input id="sCb" type="checkbox"> Modo daltónico (colores de notas contrastados)</label>
   <label data-cat="gfx">Tamaño del texto <output id="oUis"></output><input id="sUis" type="range" min="90" max="140" step="10"></label>
   <label data-cat="gfx">Opacidad de la pista <output id="oLane"></output><input id="sLane" type="range" min="0" max="100" step="5"></label>
@@ -406,11 +407,29 @@
   <button id="revNo" type="button" class="alt">Terminar la canción</button>
   <small id="revLeft"></small>
 </div></div>
-<div id="fakeAd" class="modal"><div class="panel fakeP"><small>ANUNCIO DE PRUEBA</small><div class="fakeBox">Aquí saldría un anuncio en video</div><button id="fadX" type="button" disabled>Espera 5 s</button></div></div>
 
-<div id="acctModal" class="modal"><div class="panel">
-  <h2>Tu perfil</h2>
-  <div class="acCard"><span class="pavWrap"><i class="pav" id="acAv">I</i><button type="button" class="pavEdit" id="acPhoto" aria-label="Cambiar foto"><svg class="i" viewBox="0 0 24 24"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg></button></span><div><b id="acUser"></b><small id="acLv"></small></div></div>
+
+<div id="diagModal" class="modal"><div class="panel diagP">
+  <h2>Diagnóstico de rendimiento</h2>
+  <p id="diagSt">Midiendo… no toques la pantalla (unos 10 segundos).</p>
+  <pre id="diagOut"></pre>
+  <button id="diagCopy" type="button" class="alt" style="display:none">Copiar resultados</button>
+  <button id="diagClose" type="button" class="alt">Cerrar</button>
+</div></div>
+
+<div id="acctModal" class="modal"><div class="panel acP">
+  <div class="acHero">
+    <span class="pavWrap"><i class="pav" id="acAv">I</i><button type="button" class="pavEdit" id="acPhoto" aria-label="Cambiar foto"><svg class="i" viewBox="0 0 24 24"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg></button></span>
+    <b id="acUser"></b>
+    <small id="acLv"></small>
+    <div class="acXp"><i id="acXpBar"></i></div>
+    <small id="acXpTxt"></small>
+  </div>
+  <div class="acT">Estadísticas</div>
+  <div id="acStats" class="acGrid"></div>
+  <div class="acT">Mejores rangos por canción</div>
+  <div id="acRanks" class="acRanks"></div>
+  <div class="acT">Tu nombre</div>
   <input id="acName" type="text" placeholder="Tu nombre" maxlength="24" autocomplete="nickname">
   <button id="acNoPhoto" type="button" class="alt" style="display:none">Quitar foto</button>
   <button id="acGo" class="play sm">Guardar</button>

@@ -1527,3 +1527,14 @@ footer.dock .dockRow #btnOpts{display:none!important}
 #diagModal h2{text-align:center}
 #diagOut{margin:0;padding:10px 12px;border-radius:12px;background:rgba(0,0,0,.4);color:#dfe3f5;font:500 .78rem/1.5 ui-monospace,Menlo,monospace;white-space:pre-wrap;overflow:auto;max-height:52vh}
 #diagSt{color:#FFD166;font-weight:600;font-size:.88rem}
+
+/* ===== Ahorro real (v30): lite2 y lite3 ahora sí hacen algo ===== */
+/* lite2 / lite3: sin animaciones infinitas, sin desenfoques, sin sombras pesadas, sin capas extra */
+html.lite2 *,html.lite2 *::before,html.lite2 *::after,html.lite3 *,html.lite3 *::before,html.lite3 *::after{animation:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;filter:none!important;will-change:auto!important;text-shadow:none!important}
+html.lite2 #menuBg,html.lite3 #menuBg{will-change:auto!important;transform:none!important}
+html.lite2 #mParts,html.lite3 #mParts,html.lite2 .wRings,html.lite3 .wRings,html.lite2 .tris,html.lite3 .tris{display:none!important}
+html.lite2 *,html.lite3 *{box-shadow:none!important}
+html.lite3 *,html.lite3 *::before,html.lite3 *::after{transition:none!important}
+/* Diagnóstico: durante la prueba se apaga todo lo que hay debajo para medir solo el teléfono */
+html.dq *,html.dq *::before,html.dq *::after{animation:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;filter:none!important;transition:none!important}
+html.dq body>*:not(#diagCv):not(#diagModal){visibility:hidden!important}

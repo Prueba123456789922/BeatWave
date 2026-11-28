@@ -1051,12 +1051,12 @@ const closeSet = () => { try { saveSettings(); } catch (e) {} $('#settings').cla
 $('#btnCloseSet').onclick = closeSet; $('#setX').onclick = closeSet;
 
 /* ---------- Partida ---------- */
-const cv = $('#cv'), c = cv.getContext('2d'), vid = $('#bgVideo'), hS = $('#hScore'), hA = $('#hAcc'), fld = $('#field');
+const cv = $('#cv'), c = cv.getContext('2d', { desynchronized: true }), vid = $('#bgVideo'), hS = $('#hScore'), hA = $('#hAcc'), fld = $('#field');
 function layoutField() { const { pw, x0, lw, hy } = geo(); fld.style.left = x0 + 'px'; fld.style.width = pw + 'px'; fld.innerHTML = `<i style="left:${lw - 1 | 0}px"></i><i style="left:${lw * 2 - 1 | 0}px"></i><b style="top:${hy - 1}px"></b>`; }
 let W = 0, H = 0;
 function resize() {
   let r;
-  if (S.qual === 1) r = Math.min(devicePixelRatio || 1, 2);
+  if (S.qual === 1) r = Math.min(devicePixelRatio || 1, 2) * QH;
   else if (S.qual === 2) r = Math.min(devicePixelRatio || 1, .75);
   else if (S.qual === 3) r = Math.min(devicePixelRatio || 1, 1);
   else r = Math.min(devicePixelRatio || 1, LOW ? 1 : 1.25) * Q;
@@ -1103,7 +1103,7 @@ function begin(song) {
   const rp = RPLY && Date.now() - RPLY.arm < 60000 ? RPLY : null; RPLY = null;
   if (rp) { rp.keep = { mods: S.mods, diff: S.diff, speed: S.speed, lnLen: S.lnLen }; Object.assign(S, { mods: { ...rp.snap.mods }, diff: rp.snap.diff, speed: rp.snap.speed, lnLen: rp.snap.lnLen }); song.st = null; } // la repetición usa los ajustes de aquella partida
   if (!song.tut && !rp) { LAST[fkey(song)] = Date.now(); lsSet('bwlast', JSON.stringify(LAST)); }
-  Q = 1;
+  Q = 1; QH = 1;
   fld.classList.remove('gold');
   const raw = song.map.notes || buildMap(song.map, S.mods || {}, song.tut);
   const PR = !song.tut && !rp && !!S.prac, POFF = PR ? Math.floor(song.buf.duration * (+S.pracAt || 0) / 100) : 0;
@@ -1280,11 +1280,12 @@ function frame() {
   if (ctx.state !== 'running' && !G.paused) ctx.resume();
   const n = G.frz ? G.fz : now(), dt = Math.min(.1, Math.max(0, n - G.last)); G.last = n;
   const pn = performance.now(), ft = Math.min(100, pn - G.lp); G.lp = pn;
-  if (S.qual === 0 && !G.paused && !document.hidden) { // ajuste automático: baja la calidad por escalones hasta que el equipo aguante
+  if ((S.qual === 0 || S.qual === 1) && !G.paused && !document.hidden) { // ajuste automático (en «Alta» solo baja la densidad de píxeles, sin quitar efectos, hasta 1×): baja la calidad por escalones hasta que el equipo aguante
     const cap30 = lite2() || S.fps30, tgt = cap30 ? 33.4 : 16.7; G.fn = (G.fn || 0) + 1; G.fa = G.fa * .9 + Math.min(ft, tgt * 2.5) * .1;
     if (G.fn > 45 && ++G.fc > 20 && G.fa > tgt * 1.3) {
       G.fc = 0; const bad = G.fa > tgt * 2.2;
-      if (Q > .4 && !minTier()) { Q = Math.max(.4, Q - (bad ? .3 : .15)); G.fa = tgt; resize(); }
+      if (S.qual === 1) { const qhMin = 1 / Math.min(devicePixelRatio || 1, 2); if (QH > qhMin + .01) { QH = Math.max(qhMin, QH * (bad ? .72 : .86)); G.fa = tgt; resize(); } }
+      else if (Q > .4 && !minTier()) { Q = Math.max(.4, Q - (bad ? .3 : .15)); G.fa = tgt; resize(); }
       else if (S.perf === 0 && !S.autoLite) { S.autoLite = true; saveSettings(); applyPerf(); G.fa = 33.4; resize(); msg('Modo ahorro activado para que vaya más fluido.'); }
       else if (S.perf === 0 && !S.autoMin) { S.autoMin = true; saveSettings(); applyPerf(); G.fa = 33.4; resize(); msg('Modo mínimo activado: este equipo es muy lento. Puedes cambiarlo en Ajustes → Gráficos.'); }
     }
@@ -1405,7 +1406,7 @@ function mkCover(s, r) {
   else { const gr = g.createLinearGradient(0, 0, d, d); gr.addColorStop(0, `hsl(${s.hue} 70% 45%)`); gr.addColorStop(1, `hsl(${(s.hue + 60) % 360} 60% 25%)`); g.fillStyle = gr; g.fillRect(0, 0, d, d); }
   return o;
 }
-let Q = 1, GFX = null; const FONT = "'Rajdhani','Segoe UI',sans-serif", FONT1 = "'Orbitron','Segoe UI',sans-serif";
+let Q = 1, QH = 1, GFX = null; const FONT = "'Rajdhani','Segoe UI',sans-serif", FONT1 = "'Orbitron','Segoe UI',sans-serif";
 const mk = (w, h) => { const o = document.createElement('canvas'); o.width = w | 0; o.height = h | 0; return o; };
 function buildGfx(r) {
   const { pw, x0, lw, hy, sz } = geo(), u = sz + 20, LT = isLT(); GFX = { r, u, bg: [], spr: {}, glow: {} };

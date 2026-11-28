@@ -1,5 +1,5 @@
 // BeatWave · service worker: funciona sin internet (caché primero, se actualiza en segundo plano)
-const C = 'bw-v36';
+const C = 'bw-v38';
 const ASSETS = ['./', 'index.html', 'styles.css', 'script.js', 'manifest.webmanifest', 'rocket.mp3', 'icon-192.png', 'icon-512.png', 'icon-maskable-512.png',
   'assets/themes/menta.png', 'assets/sfx/tap.wav', 'assets/sfx/miss.wav', 'assets/sfx/combo.wav'];
 const FONT_HOSTS = ['fonts.googleapis.com', 'fonts.gstatic.com'];

@@ -1552,3 +1552,7 @@ html.nofx #select footer,html.nofx #select>#side,html.nofx #detail{background-co
 
 /* v32: la barra de abajo (Jugar / Atrás…) pegada al borde, sin franja vacía debajo */
 #select footer.dock{bottom:0!important;padding-bottom:calc(10px + var(--sab))!important}
+
+
+/* v37: con una ventana abierta (Ajustes, perfil, pausa…) la pantalla de atrás no se pinta ni se estiliza: abrir y cerrar es mucho más barato */
+html.mo:not(.nomo) .screen:not(#game){visibility:hidden!important}

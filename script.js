@@ -31,7 +31,7 @@ let LOW = HW_LOW, loadedAll = false, menuSkip = 0, lowSec = 0, vzCol = null, vzC
 
 const S = Object.assign({
   speed: 1, lang: 'es', latency: 0, autoSync: true, sfx: .6, video: true, cover: true, diff: 0, size: 64, qual: 0,
-  vib: false, skin: 0, lnLen: 1, mods: {}, vm: 1, vmu: 1, dim: .35, hud: 1, laneA: 1, ringA: 1, perf: 0, autoLite: false, cb: false, uis: 1, country: '',
+  vib: false, skin: 0, lnLen: 1, mods: {}, vm: 1, vmu: 1, dim: .35, hud: 1, laneA: 1, ringA: 1, perf: 0, fpsCap: 0, autoLite: false, cb: false, uis: 1, country: '',
   bgImage: null, accent: 0, pauseSize: 56, pausePos: 'pause-top-right',
   theme: 'menta', n3d: true, vmode: 'auto', vpos: 50
 }, JSON.parse(localStorage.getItem('bwsettings') || '{}'));
@@ -46,6 +46,7 @@ function applySkin() { const k = S.skinC || SKINS[S.skin] || SKINS[0]; COL[0] = 
 const lite2 = () => S.perf === 1 || S.perf === 3 || (S.perf !== 2 && !!S.autoLite);
 const minTier = () => S.perf === 3 || (S.perf === 0 && !!S.autoMin); // «Mínimo»: para equipos muy lentos
 if (NATIVE && (S.perfInit || 0) < 3) { S.perfInit = 3; if (S.perf === 2 || !S.perf) { S.perf = 0; S.autoLite = true; } try { localStorage.setItem('bwsettings', JSON.stringify(S)); } catch (e) {} }
+if (!S.capInit) { S.capInit = 1; S.fpsCap = 0; S.fps30 = false; try { localStorage.setItem('bwsettings', JSON.stringify(S)); } catch (e) {} }
 function applyPerf() { LOW = S.perf === 1 || S.perf === 3 || (S.perf !== 2 && (HW_LOW || !!S.autoLite)); const h = document.documentElement.classList; h.toggle('lite', LOW); h.toggle('lite2', lite2()); h.toggle('lite3', minTier()); h.toggle('nofx', NATIVE || LOW); }
 function applyUis() { document.documentElement.style.fontSize = Math.round((S.uis || 1) * 100) + '%'; }
 function perfWatch(f, el) { if (!loadedAll || S.perf !== 0 || S.autoLite || document.hidden || el > 1500) { lowSec = 0; return; } lowSec = f < 20 ? lowSec + 1 : 0; if (lowSec >= 5) { S.autoLite = true; saveSettings(); applyPerf(); msg('Modo ahorro activado para que todo vaya más fluido. Puedes cambiarlo en Ajustes → Gráficos.'); } }
@@ -918,7 +919,7 @@ function bindSettings() {
   $('#sPerf').value = String(S.perf || 0); $('#sCb').checked = !!S.cb; $('#sUis').value = Math.round((S.uis || 1) * 100); $('#oUis').textContent = Math.round((S.uis || 1) * 100) + '%';
   $('#sLane').value = Math.round((S.laneA ?? 1) * 100); $('#oLane').textContent = Math.round((S.laneA ?? 1) * 100) + '%'; $('#sRing').value = Math.round((S.ringA ?? 1) * 100); $('#oRing').textContent = Math.round((S.ringA ?? 1) * 100) + '%';
   $$('#settings select').forEach(s => s._sync && s._sync()); $$('#settings input[type=range]').forEach(r => r.style.setProperty('--p', ((r.value - r.min) / (r.max - r.min) * 100) + '%'));
-  $('#sTap').checked = S.tapSnd !== false; $('#sHitFx').checked = S.hitFx !== false; $('#sFps30').checked = !!S.fps30; $('#sPrev').checked = S.prev !== false; $('#sShape').value = S.shape || 'round'; $('#sPrac').checked = !!S.prac; $('#sPracAt').value = String(S.pracAt || 0);
+  $('#sTap').checked = S.tapSnd !== false; $('#sHitFx').checked = S.hitFx !== false; $('#sFpsCap').value = String(S.fpsCap | 0); $('#sPrev').checked = S.prev !== false; $('#sShape').value = S.shape || 'round'; $('#sPrac').checked = !!S.prac; $('#sPracAt').value = String(S.pracAt || 0);
   syncWheels();
   $('#bgImgInfo').textContent = S.bgImage ? 'Imagen de ambiente aplicada.' : 'Ninguna imagen seleccionada.';
 }
@@ -931,7 +932,7 @@ $('#settings').oninput = () => {
   S.vm = +$('#sVm').value; S.vmu = +$('#sMu').value; S.sfx = +$('#sSfx').value; S.video = $('#sVideo').checked; S.cover = $('#sCover').checked; S.vib = $('#sVib').checked; S.dim = +$('#sDim').value;
   { const pf0 = S.perf; S.perf = +$('#sPerf').value; S.cb = $('#sCb').checked; S.uis = +$('#sUis').value / 100; if (S.perf === 0 && pf0 !== 0) { S.autoLite = false; S.autoMin = false; } applyPerf(); applyUis(); }
   S.laneA = +$('#sLane').value / 100; S.ringA = +$('#sRing').value / 100;
-  S.tapSnd = $('#sTap').checked; S.hitFx = $('#sHitFx').checked; S.fps30 = $('#sFps30').checked; S.prev = $('#sPrev').checked; S.shape = $('#sShape').value; S.prac = $('#sPrac').checked; S.pracAt = +$('#sPracAt').value;
+  S.tapSnd = $('#sTap').checked; S.hitFx = $('#sHitFx').checked; S.fpsCap = +$('#sFpsCap').value; S.fps30 = false; S.prev = $('#sPrev').checked; S.shape = $('#sShape').value; S.prac = $('#sPrac').checked; S.pracAt = +$('#sPracAt').value;
   S.pauseSize = +$('#sPauseSize').value; S.pausePos = $('#sPausePos').value; S.hud = (+$('#sHud').value || 100) / 100; $('#oHud').textContent = Math.round(S.hud * 100) + '%'; { const o3 = S.n3d; S.theme = $('#sTheme').value; S.n3d = $('#sN3d').checked; S.vmode = $('#sVfit').value; S.vpos = +$('#sVpos').value; applyTheme(); if (o3 !== S.n3d && typeof GFX !== 'undefined' && GFX) { try { buildGfx(GFX.r); } catch (e) {} } }
   applySkin(); applyAccent(); applyPauseUI(); applyVol(); saveSettings(); bindSettings(); info(); if (songs.length) renderList();
   if (G) resize();
@@ -1047,12 +1048,14 @@ function menuFrame() {
   menuRaf = requestAnimationFrame(menuFrame);
 }
 addEventListener('resize', () => { if (menuFrame.c) menuFrame.c.ow = 0; });
+{ let q = 0; const root = document.documentElement, upd = () => { q = 0; root.classList.toggle('mo', !!document.querySelector('.modal.open')); };
+  new MutationObserver(() => { if (!q) q = requestAnimationFrame(upd); }).observe(document.body, { attributes: true, attributeFilter: ['class'], subtree: true }); }
 $('#btnSettings').onclick = () => showSet('all');
 const closeSet = () => { try { saveSettings(); } catch (e) {} $('#settings').classList.remove('open'); };
 $('#btnCloseSet').onclick = closeSet; $('#setX').onclick = closeSet;
 
 /* ---------- Partida ---------- */
-const cv = $('#cv'), c = cv.getContext('2d', { desynchronized: true }), vid = $('#bgVideo'), hS = $('#hScore'), hA = $('#hAcc'), fld = $('#field');
+const cv = $('#cv'), c = cv.getContext('2d'), vid = $('#bgVideo'), hS = $('#hScore'), hA = $('#hAcc'), fld = $('#field');
 function layoutField() { const { pw, x0, lw, hy } = geo(); fld.style.left = x0 + 'px'; fld.style.width = pw + 'px'; fld.innerHTML = `<i style="left:${lw - 1 | 0}px"></i><i style="left:${lw * 2 - 1 | 0}px"></i><b style="top:${hy - 1}px"></b>`; }
 let W = 0, H = 0;
 function resize() {
@@ -1273,7 +1276,7 @@ const fxOn = () => S.qual !== 2 && !lite2();
 function loop() {
   if (!G) return;
   raf = requestAnimationFrame(loop);
-  if ((lite2() || S.fps30) && !G.paused) { const tn = performance.now(); if (tn - (G.t30 || 0) < 28) return; G.t30 = tn; } // modo ahorro: máximo ~30 cuadros por segundo
+  { const fc = S.fpsCap | 0; if (fc && !G.paused) { const tn = performance.now(); if (tn - (G.t30 || 0) < (fc === 30 ? 28 : 12)) return; G.t30 = tn; } } // límite de FPS elegido en Ajustes (0 = sin límite)
   try { frame(); } catch (e) { showErr('Frame: ' + e.message); const tn = performance.now(); if (G && tn - (G.er || 0) > 3000) { G.er = tn; resize(); } }
 }
 function frame() {
@@ -1282,7 +1285,7 @@ function frame() {
   const n = G.frz ? G.fz : now(), dt = Math.min(.1, Math.max(0, n - G.last)); G.last = n;
   const pn = performance.now(), ft = Math.min(100, pn - G.lp); G.lp = pn;
   if ((S.qual === 0 || S.qual === 1) && !G.paused && !document.hidden) { // ajuste automático (en «Alta» solo baja la densidad de píxeles, sin quitar efectos, hasta 1×): baja la calidad por escalones hasta que el equipo aguante
-    const cap30 = lite2() || S.fps30, tgt = cap30 ? 33.4 : 16.7; G.fn = (G.fn || 0) + 1; G.fa = G.fa * .9 + Math.min(ft, tgt * 2.5) * .1;
+    const tgt = (S.fpsCap | 0) === 30 ? 33.4 : 16.7; G.fn = (G.fn || 0) + 1; G.fa = G.fa * .9 + Math.min(ft, tgt * 2.5) * .1;
     if (G.fn > 45 && ++G.fc > 20 && G.fa > tgt * 1.3) {
       G.fc = 0; const bad = G.fa > tgt * 2.2;
       if (S.qual === 1) { const qhMin = 1 / Math.min(devicePixelRatio || 1, 2); if (QH > qhMin + .01) { QH = Math.max(qhMin, QH * (bad ? .72 : .86)); G.fa = tgt; resize(); } }
@@ -2101,14 +2104,14 @@ async function runDiag() {
   line(`Teléfono: ${(ua.match(/\(Linux; Android ([^;)]+)(?:; ([^)]+))?\)/) || []).slice(1).join(' · ') || 'desconocido'}`);
   line(`WebView/Chrome: ${ch || '?'} · núcleos: ${navigator.hardwareConcurrency || '?'} · RAM: ${navigator.deviceMemory || '?'} GB`);
   line(`Pantalla: ${innerWidth}×${innerHeight} · ratio ${devicePixelRatio} · modo: ${NATIVE ? 'app' : 'web'} · ahorro: ${LOW ? 'sí' : 'no'}`);
-  line(`Calidad gráfica: ${['Auto','Alta','Baja','Media'][S.qual|0]} · v36`);
+  line(`Calidad gráfica: ${['Auto','Alta','Baja','Media'][S.qual|0]} · límite de FPS: ${S.fpsCap ? S.fpsCap : 'sin límite'} · v38`);
   line(`Ajuste de rendimiento: ${['Auto','Ahorro','Completo','Mínimo'][S.perf|0]} · clases: ${document.documentElement.className || '(ninguna)'} · autoLite: ${!!S.autoLite}`);
   const frames = (ms, draw) => new Promise(r => { let c = 0, t0 = 0, last = 0, mx = 0; const f = t => { if (!t0) { t0 = last = t; } c++; mx = Math.max(mx, t - last); last = t; if (draw) draw(c); if (t - t0 < ms) requestAnimationFrame(f); else r({ fps: (c - 1) * 1000 / (t - t0), mx }); }; requestAnimationFrame(f); });
   const fmt = r => `${r.fps.toFixed(0)} FPS (peor fotograma ${r.mx.toFixed(0)} ms)`;
   const cv = document.createElement('canvas'); cv.style.cssText = 'position:fixed;left:0;top:0;width:100vw;height:100vh;z-index:9999;pointer-events:none;opacity:.001'; cv.id = 'diagCv'; cv.width = innerWidth; cv.height = innerHeight; document.body.append(cv); const H0 = document.documentElement.classList;
   const g = cv.getContext('2d'), W = cv.width, H = cv.height;
   line(''); line('Velocidad de la pantalla y del dibujo:');
-  H0.remove('dq'); window.bwForceMenu = false; line('• Pantalla vacía con TU interfaz detrás: ' + fmt(await frames(1500)));
+  H0.remove('dq'); H0.add('nomo'); window.bwForceMenu = false; line('• Pantalla vacía con TU interfaz detrás: ' + fmt(await frames(1500)));
   window.bwForceMenu = true; line('• Igual, con el bucle del menú corriendo: ' + fmt(await frames(1500))); window.bwForceMenu = false;
   { line(''); line('¿Qué frena? (se oculta cada parte y se mide):');
     for (const sel of ['#menuBg', '#mBar', '#orbPos', '#mMenu', '#mBot', '#menu', '#settings']) { const e = document.querySelector(sel); if (!e) continue; const old = e.style.visibility; e.style.visibility = 'hidden'; await new Promise(r => setTimeout(r, 250)); const r = await frames(1000); e.style.visibility = old; line(`• sin ${sel}: ${r.fps.toFixed(0)} FPS`); }
@@ -2122,7 +2125,7 @@ async function runDiag() {
   line('• 40 textos: ' + fmt(await frames(1500, () => { g.clearRect(0, 0, W, H); g.fillStyle = '#fff'; g.font = '700 20px sans-serif'; for (let i = 0; i < 40; i++) g.fillText('PERFECT ' + i, (i * 83) % W, (i * 47) % H + 20); })));
   { cv.style.opacity = '1'; const r2 = Math.min(devicePixelRatio || 1, 2); cv.width = Math.round(innerWidth * r2); cv.height = Math.round(innerHeight * r2); const W2 = cv.width, H2 = cv.height;
     line(`• Lienzo grande como el de la partida (${W2}×${H2}): ` + fmt(await frames(1500, () => { g.clearRect(0, 0, W2, H2); g.fillStyle = 'rgba(10,10,16,.82)'; g.fillRect(W2 * .1, 0, W2 * .8, H2); for (let i = 0; i < 50; i++) { g.fillStyle = i % 2 ? '#00E5FF' : '#FF4D8D'; g.fillRect((i * 37) % W2, (i * 61) % H2, 64, 64); } }))); }
-  cv.remove(); H0.remove('dq');
+  cv.remove(); H0.remove('dq'); H0.remove('nomo');
   try { init(); const c = ctx; const t0 = performance.now(); for (let i = 0; i < 1000; i++) c.getOutputTimestamp(); const t1 = performance.now(); for (let i = 0; i < 1000; i++) void c.currentTime; const t2 = performance.now();
     line(''); line('Audio:'); line(`• Leer la hora del audio: ${((t1 - t0) / 1000).toFixed(3)} ms por lectura (normal: menos de 0.05)`); line(`• Estado: ${c.state} · latencia de salida: ${((c.outputLatency || c.baseLatency || 0) * 1000).toFixed(0)} ms`); } catch (e) { line('• Audio: no se pudo medir'); }
   st.textContent = 'Listo. Mándame una captura de esta pantalla.'; $('#diagCopy').style.display = '';

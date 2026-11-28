@@ -2108,6 +2108,8 @@ async function runDiag() {
   line(''); line('Velocidad de la pantalla y del dibujo:');
   H0.remove('dq'); line('• Pantalla vacía con TU interfaz detrás: ' + fmt(await frames(1500)));
   H0.add('dq'); line('• Pantalla vacía con la interfaz apagada: ' + fmt(await frames(1500)));
+  { const hadAd = Ads.on; line(`• Anuncio (banner) en pantalla durante la prueba: ${Ads.available() ? (hadAd ? 'SÍ' : 'no') : 'no hay (no es la app)'}`);
+    if (Ads.available() && hadAd) { await Ads.banner(false); await new Promise(r => setTimeout(r, 900)); line('• Pantalla vacía SIN el anuncio: ' + fmt(await frames(1500))); await Ads.banner(true); } }
   line('• 200 rectángulos: ' + fmt(await frames(1500, () => { g.clearRect(0, 0, W, H); for (let i = 0; i < 200; i++) { g.fillStyle = i % 2 ? '#00E5FF' : '#B388FF'; g.fillRect((i * 37) % W, (i * 61) % H, 40, 40); } })));
   line('• 120 notas con degradado: ' + fmt(await frames(1500, () => { g.clearRect(0, 0, W, H); for (let i = 0; i < 120; i++) { const x = (i * 53) % W, y = (i * 97) % H, gr = g.createLinearGradient(x, y, x, y + 40); gr.addColorStop(0, '#FF7BB0'); gr.addColorStop(1, '#FF3D7F'); g.fillStyle = gr; g.beginPath(); if (g.roundRect) g.roundRect(x, y, 56, 40, 10); else g.rect(x, y, 56, 40); g.fill(); } })));
   line('• 40 formas con brillo (sombra): ' + fmt(await frames(1500, () => { g.clearRect(0, 0, W, H); g.shadowColor = '#00E5FF'; g.shadowBlur = 14; g.fillStyle = '#00E5FF'; for (let i = 0; i < 40; i++) g.fillRect((i * 71) % W, (i * 113) % H, 50, 30); g.shadowBlur = 0; })));
@@ -2169,11 +2171,7 @@ const Ads = {
   ready: false, on: false,
   available() { return !!AdP(); }, // solo en la app Android (en la web no hay anuncios)
   async init() { const A = AdP(); if (!A || this.ready) return; await ADS_READY; try { await A.initialize({ initializeForTesting: ADS.testing }); this.ready = true; A.addListener('bannerAdSizeChanged', i => setAdH(i && i.height)); } catch (e) {} },
-  async banner(show) { // anuncio pequeño abajo, solo fuera de la partida
-    const A = AdP(); if (!A) return; await this.init(); if (!this.ready) return;
-    if (show && !this.on) { this.on = true; try { await A.showBanner({ adId: ADS.banner, adSize: 'ADAPTIVE_BANNER', position: 'BOTTOM_CENTER', margin: 0, isTesting: testFor(ADS.banner) }); } catch (e) { this.on = false; } }
-    else if (!show && this.on) { this.on = false; try { await A.removeBanner(); } catch (e) {} setAdH(0); }
-  },
+  async banner() { /* banner desactivado: solo hay anuncios con recompensa (revivir y monedas) */ },
   async rewarded() { // anuncio que el jugador elige ver: devuelve true si se ganó la recompensa
     const A = AdP(); if (!A) return false; await this.init();
     let got = false; const h = await A.addListener('onRewardedVideoAdReward', () => { got = true; });

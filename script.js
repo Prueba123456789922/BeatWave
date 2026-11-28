@@ -1013,6 +1013,7 @@ function sizeViz() { const o = $('#btnPlay').offsetWidth || 320, px = Math.min(M
 addEventListener('resize', sizeViz);
 function menuFrame() {
   menuRaf = 0; if (!$('#menu').classList.contains('active')) return;
+  if (!window.bwForceMenu && document.querySelector('.modal.open')) { menuRaf = requestAnimationFrame(menuFrame); return; }
   if (LOW && (menuSkip ^= 1)) { menuRaf = requestAnimationFrame(menuFrame); return; }
   const MF = menuFrame.c || (menuFrame.c = { orb: $('#btnPlay'), menu: $('#menu'), prog: $('#nProg i'), fps: $('#fpsB b'), ms: $('#msB'), last: 0, ow: 0, still: false, pw: '' }), orb = MF.orb, now = performance.now(), t = now / 1000;
   let en = 0, ph = 0, prog = 0, playing = false;
@@ -2100,13 +2101,18 @@ async function runDiag() {
   line(`Teléfono: ${(ua.match(/\(Linux; Android ([^;)]+)(?:; ([^)]+))?\)/) || []).slice(1).join(' · ') || 'desconocido'}`);
   line(`WebView/Chrome: ${ch || '?'} · núcleos: ${navigator.hardwareConcurrency || '?'} · RAM: ${navigator.deviceMemory || '?'} GB`);
   line(`Pantalla: ${innerWidth}×${innerHeight} · ratio ${devicePixelRatio} · modo: ${NATIVE ? 'app' : 'web'} · ahorro: ${LOW ? 'sí' : 'no'}`);
+  line(`Calidad gráfica: ${['Auto','Alta','Baja','Media'][S.qual|0]} · v36`);
   line(`Ajuste de rendimiento: ${['Auto','Ahorro','Completo','Mínimo'][S.perf|0]} · clases: ${document.documentElement.className || '(ninguna)'} · autoLite: ${!!S.autoLite}`);
   const frames = (ms, draw) => new Promise(r => { let c = 0, t0 = 0, last = 0, mx = 0; const f = t => { if (!t0) { t0 = last = t; } c++; mx = Math.max(mx, t - last); last = t; if (draw) draw(c); if (t - t0 < ms) requestAnimationFrame(f); else r({ fps: (c - 1) * 1000 / (t - t0), mx }); }; requestAnimationFrame(f); });
   const fmt = r => `${r.fps.toFixed(0)} FPS (peor fotograma ${r.mx.toFixed(0)} ms)`;
   const cv = document.createElement('canvas'); cv.style.cssText = 'position:fixed;left:0;top:0;width:100vw;height:100vh;z-index:9999;pointer-events:none;opacity:.001'; cv.id = 'diagCv'; cv.width = innerWidth; cv.height = innerHeight; document.body.append(cv); const H0 = document.documentElement.classList;
   const g = cv.getContext('2d'), W = cv.width, H = cv.height;
   line(''); line('Velocidad de la pantalla y del dibujo:');
-  H0.remove('dq'); line('• Pantalla vacía con TU interfaz detrás: ' + fmt(await frames(1500)));
+  H0.remove('dq'); window.bwForceMenu = false; line('• Pantalla vacía con TU interfaz detrás: ' + fmt(await frames(1500)));
+  window.bwForceMenu = true; line('• Igual, con el bucle del menú corriendo: ' + fmt(await frames(1500))); window.bwForceMenu = false;
+  { line(''); line('¿Qué frena? (se oculta cada parte y se mide):');
+    for (const sel of ['#menuBg', '#mBar', '#orbPos', '#mMenu', '#mBot', '#menu', '#settings']) { const e = document.querySelector(sel); if (!e) continue; const old = e.style.visibility; e.style.visibility = 'hidden'; await new Promise(r => setTimeout(r, 250)); const r = await frames(1000); e.style.visibility = old; line(`• sin ${sel}: ${r.fps.toFixed(0)} FPS`); }
+    line(''); }
   H0.add('dq'); line('• Pantalla vacía con la interfaz apagada: ' + fmt(await frames(1500)));
   { const hadAd = Ads.on; line(`• Anuncio (banner) en pantalla durante la prueba: ${Ads.available() ? (hadAd ? 'SÍ' : 'no') : 'no hay (no es la app)'}`);
     if (Ads.available() && hadAd) { await Ads.banner(false); await new Promise(r => setTimeout(r, 900)); line('• Pantalla vacía SIN el anuncio: ' + fmt(await frames(1500))); await Ads.banner(true); } }
@@ -2114,6 +2120,8 @@ async function runDiag() {
   line('• 120 notas con degradado: ' + fmt(await frames(1500, () => { g.clearRect(0, 0, W, H); for (let i = 0; i < 120; i++) { const x = (i * 53) % W, y = (i * 97) % H, gr = g.createLinearGradient(x, y, x, y + 40); gr.addColorStop(0, '#FF7BB0'); gr.addColorStop(1, '#FF3D7F'); g.fillStyle = gr; g.beginPath(); if (g.roundRect) g.roundRect(x, y, 56, 40, 10); else g.rect(x, y, 56, 40); g.fill(); } })));
   line('• 40 formas con brillo (sombra): ' + fmt(await frames(1500, () => { g.clearRect(0, 0, W, H); g.shadowColor = '#00E5FF'; g.shadowBlur = 14; g.fillStyle = '#00E5FF'; for (let i = 0; i < 40; i++) g.fillRect((i * 71) % W, (i * 113) % H, 50, 30); g.shadowBlur = 0; })));
   line('• 40 textos: ' + fmt(await frames(1500, () => { g.clearRect(0, 0, W, H); g.fillStyle = '#fff'; g.font = '700 20px sans-serif'; for (let i = 0; i < 40; i++) g.fillText('PERFECT ' + i, (i * 83) % W, (i * 47) % H + 20); })));
+  { cv.style.opacity = '1'; const r2 = Math.min(devicePixelRatio || 1, 2); cv.width = Math.round(innerWidth * r2); cv.height = Math.round(innerHeight * r2); const W2 = cv.width, H2 = cv.height;
+    line(`• Lienzo grande como el de la partida (${W2}×${H2}): ` + fmt(await frames(1500, () => { g.clearRect(0, 0, W2, H2); g.fillStyle = 'rgba(10,10,16,.82)'; g.fillRect(W2 * .1, 0, W2 * .8, H2); for (let i = 0; i < 50; i++) { g.fillStyle = i % 2 ? '#00E5FF' : '#FF4D8D'; g.fillRect((i * 37) % W2, (i * 61) % H2, 64, 64); } }))); }
   cv.remove(); H0.remove('dq');
   try { init(); const c = ctx; const t0 = performance.now(); for (let i = 0; i < 1000; i++) c.getOutputTimestamp(); const t1 = performance.now(); for (let i = 0; i < 1000; i++) void c.currentTime; const t2 = performance.now();
     line(''); line('Audio:'); line(`• Leer la hora del audio: ${((t1 - t0) / 1000).toFixed(3)} ms por lectura (normal: menos de 0.05)`); line(`• Estado: ${c.state} · latencia de salida: ${((c.outputLatency || c.baseLatency || 0) * 1000).toFixed(0)} ms`); } catch (e) { line('• Audio: no se pudo medir'); }

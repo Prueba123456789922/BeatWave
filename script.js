@@ -31,7 +31,7 @@ let LOW = HW_LOW, loadedAll = false, menuSkip = 0, lowSec = 0, vzCol = null, vzC
 
 const S = Object.assign({
   speed: 1, lang: 'es', latency: 0, autoSync: true, sfx: .6, video: true, cover: true, diff: 0, size: 64, qual: 0,
-  vib: false, skin: 0, lnLen: 1, mods: {}, vm: 1, vmu: 1, dim: .35, hud: 1, laneA: 1, ringA: 1, perf: 0, fpsCap: 0, vblur: false, autoLite: false, cb: false, uis: 1, country: '',
+  vib: false, skin: 0, lnLen: 1, mods: {}, vm: 1, vmu: 1, dim: .35, hud: 1, laneA: 1, ringA: 1, perf: 0, fpsCap: 0, showFps: false, autoLite: false, cb: false, uis: 1, country: '',
   bgImage: null, accent: 0, pauseSize: 56, pausePos: 'pause-top-right',
   theme: 'menta', n3d: true, vmode: 'auto', vpos: 50
 }, JSON.parse(localStorage.getItem('bwsettings') || '{}'));
@@ -43,11 +43,24 @@ const WIN = { perf: .06, great: .12, good: .18 };
 const DIFF = [{ lv: 0, s: 3, gap: .5, ln: 3, fl: 6, sl: 1, ch: 0, st: 99, sg: .5 }, { lv: 1, s: 2.2, gap: .34, ln: 3, fl: 4, sl: 1, ch: 6, st: 3, sg: .2 }, { lv: 2, s: 0, gap: .2, ln: 2, fl: 3, sl: 1, ch: 4.5, st: 2.4, sg: .15 }, { lv: 3, s: 0, gap: .15, ln: 2, fl: 3, sl: 1, ch: 3.8, st: 1.8, sg: .11 }];
 const isLT = () => S.skin === 4 && !S.skinC;
 function applySkin() { const k = S.skinC || SKINS[S.skin] || SKINS[0]; COL[0] = COL[2] = k[0]; COL[1] = k[1]; if (S.cb) { COL[0] = COL[2] = '#56B4E9'; COL[1] = '#F0A30A'; } }
+const FH = { el: null, raf: 0, n: 0, g: 0, mx: 0, t0: 0, last: 0 }; // contador de FPS (Ajustes → Gráficos), apagado por defecto
+function fpsHud() {
+  const on = !!S.showFps;
+  if (on && !FH.el) { FH.el = document.createElement('div'); FH.el.id = 'fpsHud'; document.body.append(FH.el); }
+  if (FH.el) FH.el.style.display = on ? 'block' : 'none';
+  if (on && !FH.raf) {
+    FH.t0 = FH.last = performance.now(); FH.n = FH.g = FH.mx = 0;
+    const f = t => { FH.raf = requestAnimationFrame(f); FH.n++; FH.mx = Math.max(FH.mx, t - FH.last); FH.last = t;
+      if (t - FH.t0 >= 500) { const s = (t - FH.t0) / 1000; FH.el.textContent = Math.round(FH.n / s) + ' FPS' + (G && !G.paused ? ' · juego ' + Math.round(FH.g / s) : '') + ' · pico ' + Math.round(FH.mx) + ' ms'; FH.t0 = t; FH.n = FH.g = FH.mx = 0; } };
+    FH.raf = requestAnimationFrame(f);
+  }
+  if (!on && FH.raf) { cancelAnimationFrame(FH.raf); FH.raf = 0; }
+}
 const lite2 = () => S.perf === 1 || S.perf === 3 || (S.perf !== 2 && !!S.autoLite);
 const minTier = () => S.perf === 3 || (S.perf === 0 && !!S.autoMin); // «Mínimo»: para equipos muy lentos
 if (NATIVE && (S.perfInit || 0) < 3) { S.perfInit = 3; if (S.perf === 2 || !S.perf) { S.perf = 0; S.autoLite = true; } try { localStorage.setItem('bwsettings', JSON.stringify(S)); } catch (e) {} }
 if (!S.capInit) { S.capInit = 1; S.fpsCap = 0; S.fps30 = false; try { localStorage.setItem('bwsettings', JSON.stringify(S)); } catch (e) {} }
-function applyPerf() { LOW = S.perf === 1 || S.perf === 3 || (S.perf !== 2 && (HW_LOW || !!S.autoLite)); const h = document.documentElement.classList; h.toggle('lite', LOW); h.toggle('lite2', lite2()); h.toggle('lite3', minTier()); h.toggle('nofx', NATIVE || LOW); }
+function applyPerf() { LOW = S.perf === 1 || S.perf === 3 || (S.perf !== 2 && (HW_LOW || !!S.autoLite)); const h = document.documentElement.classList; h.toggle('lite', LOW); h.toggle('lite2', lite2()); h.toggle('lite3', minTier()); h.toggle('nofx', NATIVE || LOW); fpsHud(); }
 function applyUis() { document.documentElement.style.fontSize = Math.round((S.uis || 1) * 100) + '%'; }
 function perfWatch(f, el) { if (!loadedAll || S.perf !== 0 || S.autoLite || document.hidden || el > 1500) { lowSec = 0; return; } lowSec = f < 20 ? lowSec + 1 : 0; if (lowSec >= 5) { S.autoLite = true; saveSettings(); applyPerf(); msg('Modo ahorro activado para que todo vaya más fluido. Puedes cambiarlo en Ajustes → Gráficos.'); } }
 function applyAccent() {
@@ -919,7 +932,7 @@ function bindSettings() {
   $('#sPerf').value = String(S.perf || 0); $('#sCb').checked = !!S.cb; $('#sUis').value = Math.round((S.uis || 1) * 100); $('#oUis').textContent = Math.round((S.uis || 1) * 100) + '%';
   $('#sLane').value = Math.round((S.laneA ?? 1) * 100); $('#oLane').textContent = Math.round((S.laneA ?? 1) * 100) + '%'; $('#sRing').value = Math.round((S.ringA ?? 1) * 100); $('#oRing').textContent = Math.round((S.ringA ?? 1) * 100) + '%';
   $$('#settings select').forEach(s => s._sync && s._sync()); $$('#settings input[type=range]').forEach(r => r.style.setProperty('--p', ((r.value - r.min) / (r.max - r.min) * 100) + '%'));
-  $('#sTap').checked = S.tapSnd !== false; $('#sHitFx').checked = S.hitFx !== false; $('#sFpsCap').value = String(S.fpsCap | 0); $('#sVblur').checked = !!S.vblur; $('#sPrev').checked = S.prev !== false; $('#sShape').value = S.shape || 'round'; $('#sPrac').checked = !!S.prac; $('#sPracAt').value = String(S.pracAt || 0);
+  $('#sTap').checked = S.tapSnd !== false; $('#sHitFx').checked = S.hitFx !== false; $('#sFpsCap').value = String(S.fpsCap | 0); $('#sShowFps').checked = !!S.showFps; $('#sPrev').checked = S.prev !== false; $('#sShape').value = S.shape || 'round'; $('#sPrac').checked = !!S.prac; $('#sPracAt').value = String(S.pracAt || 0);
   syncWheels();
   $('#bgImgInfo').textContent = S.bgImage ? 'Imagen de ambiente aplicada.' : 'Ninguna imagen seleccionada.';
 }
@@ -932,7 +945,7 @@ $('#settings').oninput = () => {
   S.vm = +$('#sVm').value; S.vmu = +$('#sMu').value; S.sfx = +$('#sSfx').value; S.video = $('#sVideo').checked; S.cover = $('#sCover').checked; S.vib = $('#sVib').checked; S.dim = +$('#sDim').value;
   { const pf0 = S.perf; S.perf = +$('#sPerf').value; S.cb = $('#sCb').checked; S.uis = +$('#sUis').value / 100; if (S.perf === 0 && pf0 !== 0) { S.autoLite = false; S.autoMin = false; } applyPerf(); applyUis(); }
   S.laneA = +$('#sLane').value / 100; S.ringA = +$('#sRing').value / 100;
-  S.tapSnd = $('#sTap').checked; S.hitFx = $('#sHitFx').checked; S.fpsCap = +$('#sFpsCap').value; S.fps30 = false; S.vblur = $('#sVblur').checked; S.prev = $('#sPrev').checked; S.shape = $('#sShape').value; S.prac = $('#sPrac').checked; S.pracAt = +$('#sPracAt').value;
+  S.tapSnd = $('#sTap').checked; S.hitFx = $('#sHitFx').checked; S.fpsCap = +$('#sFpsCap').value; S.fps30 = false; S.showFps = $('#sShowFps').checked; fpsHud(); S.prev = $('#sPrev').checked; S.shape = $('#sShape').value; S.prac = $('#sPrac').checked; S.pracAt = +$('#sPracAt').value;
   S.pauseSize = +$('#sPauseSize').value; S.pausePos = $('#sPausePos').value; S.hud = (+$('#sHud').value || 100) / 100; $('#oHud').textContent = Math.round(S.hud * 100) + '%'; { const o3 = S.n3d; S.theme = $('#sTheme').value; S.n3d = $('#sN3d').checked; S.vmode = $('#sVfit').value; S.vpos = +$('#sVpos').value; applyTheme(); if (o3 !== S.n3d && typeof GFX !== 'undefined' && GFX) { try { buildGfx(GFX.r); } catch (e) {} } }
   applySkin(); applyAccent(); applyPauseUI(); applyVol(); saveSettings(); bindSettings(); info(); if (songs.length) renderList();
   if (G) resize();
@@ -1107,7 +1120,7 @@ function begin(song) {
   const rp = RPLY && Date.now() - RPLY.arm < 60000 ? RPLY : null; RPLY = null;
   if (rp) { rp.keep = { mods: S.mods, diff: S.diff, speed: S.speed, lnLen: S.lnLen }; Object.assign(S, { mods: { ...rp.snap.mods }, diff: rp.snap.diff, speed: rp.snap.speed, lnLen: rp.snap.lnLen }); song.st = null; } // la repetición usa los ajustes de aquella partida
   if (!song.tut && !rp) { LAST[fkey(song)] = Date.now(); lsSet('bwlast', JSON.stringify(LAST)); }
-  Q = 1; QH = 1;
+  Q = 1; QH = Math.min(1, (S.qhLast || 1) * 1.15);
   fld.classList.remove('gold');
   const raw = song.map.notes || buildMap(song.map, S.mods || {}, song.tut);
   const PR = !song.tut && !rp && !!S.prac, POFF = PR ? Math.floor(song.buf.duration * (+S.pracAt || 0) / 100) : 0;
@@ -1125,7 +1138,7 @@ function begin(song) {
   
   const showV = S.video && song.video && !lite2() && !POFF; vid.style.display = showV ? 'block' : 'none'; vid.style.opacity = Math.max(0, 1 - S.dim); vid.playbackRate = G.rate;
   vid.muted = true; vid.disablePictureInPicture = true; vid.playsInline = true; vid.style.objectPosition = (S.vpos ?? 50) + '% 50%'; bb.style.opacity = Math.max(0, 1 - S.dim) * .8;
-  const fitV = () => { const land = vid.videoWidth > vid.videoHeight, m = S.vmode || 'auto', contain = m === 'contain' || (m === 'auto' && land); vid.style.objectFit = contain ? 'contain' : 'cover'; bb.style.display = showV && contain && S.vblur ? 'block' : 'none'; };
+  const fitV = () => { const land = vid.videoWidth > vid.videoHeight, m = S.vmode || 'auto', contain = m === 'contain' || (m === 'auto' && land); vid.style.objectFit = contain ? 'contain' : 'cover'; bb.style.display = 'none'; };
   vid.onloadedmetadata = fitV; fitV();
   if (showV) { vid.src = song.video; vid.currentTime = 0; setTimeout(() => G && vid.play().catch(() => {}), LEAD * 1000); }
   paintGameBg(song, showV);
@@ -1249,8 +1262,8 @@ function nearest(l, n, fn) {
   return best && { o: best, d: bd, e: best.t - n };
 }
 function flickHit(l, dir) { const r = nearest(l, now(), o => o.type === 'flick' && (!dir || o.dir === dir)); if (r) { r.o.state = 1; recHit(r.o, r.e); judge(r.d, 'flick', l, r.e); G.fx[G.fx.length - 1].dir = r.o.dir; } }
-function down(id, l, x, flick) {
-  if (!G || G.paused || G.rp) return; const n = now(); G.flash[l] = 1; const p = { lane: l, from: l, t: n, x0: x, x, note: null }; G.pt.set(id, p);
+function down(id, l, x, flick, ts) {
+  if (!G || G.paused || G.rp) return; const n = now() - (ts ? Math.min(.12, Math.max(0, (performance.now() - ts) / 1000)) * G.rate : 0); // si el hilo estaba ocupado, se descuenta lo que tardó en atender el toque G.flash[l] = 1; const p = { lane: l, from: l, t: n, x0: x, x, note: null }; G.pt.set(id, p);
   if (flick) return flickHit(l);
   const r = nearest(l, n, o => o.type !== 'flick'); if (!r) return;
   recHit(r.o, r.e); judge(r.d, r.o.type, l, r.e); if (r.o.type === 'tap') r.o.state = 1; else { r.o.state = 2; p.note = r.o; }
@@ -1261,7 +1274,7 @@ function up(id) {
 }
 function endHold(o, p, n) { if (!G) return; const ok = n >= o.t + o.d - .25 && (o.type !== 'slide' || o.on / ((o.on + o.off) || 1) >= .5); o.state = 1; p.note = null; if (ok) { G.score += 30 * G.mult; sfx(700); } else { if (G.rec && G.rec[o.ix]) G.rec[o.ix][1] = 1; miss(); } }
 function recHit(o, e) { if (G && !G.rp && G.rec) G.rec[o.ix] = [Math.round(e * 1000), 0]; }
-cv.addEventListener('pointerdown', e => { e.preventDefault(); cv.setPointerCapture(e.pointerId); down(e.pointerId, laneOf(e.clientX, e.clientY), cxOf(e.clientX, e.clientY)); });
+cv.addEventListener('pointerdown', e => { e.preventDefault(); cv.setPointerCapture(e.pointerId); down(e.pointerId, laneOf(e.clientX, e.clientY), cxOf(e.clientX, e.clientY), false, e.timeStamp); });
 cv.addEventListener('pointermove', e => {
   const p = G && G.pt.get(e.pointerId); if (!p) return; p.x = cxOf(e.clientX, e.clientY); p.lane = laneOf(e.clientX, e.clientY);
   const dx = p.x - p.x0; if (!p.flick && !p.note && Math.abs(dx) > 14) { p.flick = true; p.fdir = dx > 0 ? 1 : -1; flickHit(p.from, p.fdir); }
@@ -1277,7 +1290,7 @@ function loop() {
   if (!G) return;
   raf = requestAnimationFrame(loop);
   { const fc = S.fpsCap | 0; if (fc && !G.paused) { const tn = performance.now(); if (tn - (G.t30 || 0) < (fc === 30 ? 28 : 12)) return; G.t30 = tn; } } // límite de FPS elegido en Ajustes (0 = sin límite)
-  try { frame(); } catch (e) { showErr('Frame: ' + e.message); const tn = performance.now(); if (G && tn - (G.er || 0) > 3000) { G.er = tn; resize(); } }
+  FH.g++; try { frame(); } catch (e) { showErr('Frame: ' + e.message); const tn = performance.now(); if (G && tn - (G.er || 0) > 3000) { G.er = tn; resize(); } }
 }
 function frame() {
   if (!G) return;
@@ -1288,7 +1301,7 @@ function frame() {
     const tgt = (S.fpsCap | 0) === 30 ? 33.4 : 16.7; G.fn = (G.fn || 0) + 1; G.fa = G.fa * .9 + Math.min(ft, tgt * 2.5) * .1;
     if (G.fn > 45 && ++G.fc > 20 && G.fa > tgt * 1.3) {
       G.fc = 0; const bad = G.fa > tgt * 2.2;
-      if (S.qual === 1) { const qhMin = 1 / Math.min(devicePixelRatio || 1, 2); if (QH > qhMin + .01) { QH = Math.max(qhMin, QH * (bad ? .72 : .86)); G.fa = tgt; resize(); } }
+      if (S.qual === 1) { const qhMin = 1 / Math.min(devicePixelRatio || 1, 2); if (QH > qhMin + .01) { QH = Math.max(qhMin, QH * (bad ? .72 : .86)); G.fa = tgt; S.qhLast = QH; resize(); try { lsSet('bwsettings', JSON.stringify(S)); } catch (e) {} } }
       else if (Q > .4 && !minTier()) { Q = Math.max(.4, Q - (bad ? .3 : .15)); G.fa = tgt; resize(); }
       else if (S.perf === 0 && !S.autoLite) { S.autoLite = true; saveSettings(); applyPerf(); G.fa = 33.4; resize(); msg('Modo ahorro activado para que vaya más fluido.'); }
       else if (S.perf === 0 && !S.autoMin) { S.autoMin = true; saveSettings(); applyPerf(); G.fa = 33.4; resize(); msg('Modo mínimo activado: este equipo es muy lento. Puedes cambiarlo en Ajustes → Gráficos.'); }
@@ -1325,7 +1338,7 @@ function frame() {
     if (G.odOn) { G.od -= dt / 8; if (G.od <= 0) { G.od = 0; G.odOn = false; } }
   }
   { const d0 = performance.now(); draw(n); G.dm = (G.dm || 0) * .9 + (performance.now() - d0) * .1; G.ft = (G.ft || 16.7) * .9 + ft * .1; }
-  if (bb.style.display === 'block') { const tb = performance.now(); if (tb - (G.bqT || 0) > 700) { G.bqT = tb; try { bctx.drawImage(vid, 0, 0, 64, 36); } catch (e) {} } }
+  
   if (vid.style.display === 'block' && n > 0 && ++G.vc % 30 === 0) { const dv = n - vid.currentTime, ad = Math.abs(dv); if (ad > 1) vid.currentTime = n; else if (ad > .2) vid.playbackRate = G.rate * (dv > 0 ? 1.04 : .96); else if (ad < .1 && vid.playbackRate !== G.rate) vid.playbackRate = G.rate; }
   if (pn - G.hT > 120) { G.hT = pn; const h = `Precision: ${acc().toFixed(2)}%`, k = G.score + h; if (k !== G.hud) { G.hud = k; hS.textContent = String(G.score).padStart(7, '0'); hA.textContent = h; } }
 }
@@ -2104,7 +2117,8 @@ async function runDiag() {
   line(`Teléfono: ${(ua.match(/\(Linux; Android ([^;)]+)(?:; ([^)]+))?\)/) || []).slice(1).join(' · ') || 'desconocido'}`);
   line(`WebView/Chrome: ${ch || '?'} · núcleos: ${navigator.hardwareConcurrency || '?'} · RAM: ${navigator.deviceMemory || '?'} GB`);
   line(`Pantalla: ${innerWidth}×${innerHeight} · ratio ${devicePixelRatio} · modo: ${NATIVE ? 'app' : 'web'} · ahorro: ${LOW ? 'sí' : 'no'}`);
-  line(`Calidad gráfica: ${['Auto','Alta','Baja','Media'][S.qual|0]} · límite de FPS: ${S.fpsCap ? S.fpsCap : 'sin límite'} · v39`);
+  { const ds = []; for (let i = 0; i < 40; i++) ds.push(await new Promise(r => { const a = performance.now(); requestAnimationFrame(t => r(t - a)); })); ds.sort((a, b) => a - b); const med = ds[20]; line(`Frecuencia de pantalla detectada: ~${Math.round(1000 / med)} Hz`); }
+  line(`Calidad gráfica: ${['Auto','Alta','Baja','Media'][S.qual|0]} · límite de FPS: ${S.fpsCap ? S.fpsCap : 'sin límite'} · v40`);
   line(`Ajuste de rendimiento: ${['Auto','Ahorro','Completo','Mínimo'][S.perf|0]} · clases: ${document.documentElement.className || '(ninguna)'} · autoLite: ${!!S.autoLite}`);
   const frames = (ms, draw) => new Promise(r => { let c = 0, t0 = 0, last = 0, mx = 0; const f = t => { if (!t0) { t0 = last = t; } c++; mx = Math.max(mx, t - last); last = t; if (draw) draw(c); if (t - t0 < ms) requestAnimationFrame(f); else r({ fps: (c - 1) * 1000 / (t - t0), mx }); }; requestAnimationFrame(f); });
   const fmt = r => `${r.fps.toFixed(0)} FPS (peor fotograma ${r.mx.toFixed(0)} ms)`;

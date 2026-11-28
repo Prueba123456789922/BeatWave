@@ -39,6 +39,7 @@ public class MainActivity extends BridgeActivity {
                 : WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
             getWindow().setAttributes(lp);
         }
+        requestHighRefreshRate();
         getWindow().setStatusBarColor(Color.TRANSPARENT);
         getWindow().setNavigationBarColor(Color.TRANSPARENT);
         if (Build.VERSION.SDK_INT >= 29) getWindow().setNavigationBarContrastEnforced(false);
@@ -55,6 +56,23 @@ public class MainActivity extends BridgeActivity {
         });
         for (int ms : new int[]{600, 1800, 4000}) getBridge().getWebView().postDelayed(this::sendInsets, ms); // por si la página aún no había cargado
         hideBars();
+    }
+
+    // Pide a Android la frecuencia de pantalla más alta (90 o 120 Hz si el teléfono la tiene); si no la pide, muchos teléfonos se quedan en 60.
+    private void requestHighRefreshRate() {
+        try {
+            if (Build.VERSION.SDK_INT < 23) return;
+            android.view.Display d = Build.VERSION.SDK_INT >= 30 ? getDisplay() : getWindowManager().getDefaultDisplay();
+            if (d == null) return;
+            android.view.Display.Mode cur = d.getMode(), best = cur;
+            for (android.view.Display.Mode m : d.getSupportedModes()) {
+                if (m.getPhysicalWidth() == cur.getPhysicalWidth() && m.getPhysicalHeight() == cur.getPhysicalHeight() && m.getRefreshRate() > best.getRefreshRate()) best = m;
+            }
+            WindowManager.LayoutParams lp = getWindow().getAttributes();
+            lp.preferredDisplayModeId = best.getModeId();
+            lp.preferredRefreshRate = best.getRefreshRate();
+            getWindow().setAttributes(lp);
+        } catch (Exception e) { /* si algo falla, se queda con la frecuencia normal */ }
     }
 
     @Override

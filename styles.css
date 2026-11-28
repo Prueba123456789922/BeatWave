@@ -1556,3 +1556,8 @@ html.nofx #select footer,html.nofx #select>#side,html.nofx #detail{background-co
 
 /* v37: con una ventana abierta (Ajustes, perfil, pausa…) la pantalla de atrás no se pinta ni se estiliza: abrir y cerrar es mucho más barato */
 html.mo:not(.nomo) .screen:not(#game){visibility:hidden!important}
+
+
+/* v40: sin fondo borroso detrás del video; contador de FPS (opcional, Ajustes → Gráficos) */
+#bgBlur{display:none!important}
+#fpsHud{position:fixed;top:calc(var(--sat,0px) + 4px);left:calc(var(--sal,0px) + 6px);z-index:99999;pointer-events:none;font:700 11px/1.2 ui-monospace,Menlo,Consolas,monospace;color:#7CFFB2;background:rgba(0,0,0,.6);padding:3px 7px;border-radius:7px;white-space:nowrap}

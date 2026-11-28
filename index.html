@@ -323,6 +323,7 @@
   <label data-cat="gfx">Forma de las notas <select id="sShape"><option value="round">Redondeadas</option><option value="circle">Circulares</option><option value="sharp">Cuadradas</option></select></label>
   <label data-cat="gfx" class="chk"><input id="sHitFx" type="checkbox"> Animación al golpear la nota</label>
   <label data-cat="gfx">Límite de FPS <select id="sFpsCap"><option value="0">Sin límite (a la velocidad de tu pantalla)</option><option value="60">60 FPS</option><option value="30">30 FPS (celulares lentos)</option></select></label>
+  <label data-cat="gfx" class="chk"><input id="sShowFps" type="checkbox"> Mostrar contador de FPS en pantalla</label>
   <label data-cat="gfx">Rendimiento <select id="sPerf"><option value="0">Auto: se ajusta sola</option><option value="1">Ahorro: para equipos lentos</option><option value="2">Completo: todos los efectos</option><option value="3">Mínimo: para equipos muy lentos</option></select></label>
   <button data-cat="gfx" id="btnDiag" type="button" class="diagBtn">Probar el rendimiento de mi teléfono</button>
   <label data-cat="gfx" class="chk"><input id="sCb" type="checkbox"> Modo daltónico (colores de notas contrastados)</label>
@@ -355,7 +356,6 @@
 
   <label data-cat="bg" class="chk"><input id="sCover" type="checkbox"> Mostrar la portada de fondo</label>
   <label data-cat="bg" class="chk"><input id="sVideo" type="checkbox"> Video de fondo en la partida</label>
-  <label data-cat="bg" class="chk"><input id="sVblur" type="checkbox"> Fondo borroso detrás del video (usa más batería y GPU)</label>
   <label data-cat="bg">Tema de fondo<select id="sTheme"><option value="menta">Menta</option><option value="atardecer">Atardecer</option><option value="oceano">Océano</option><option value="violeta">Violeta</option><option value="carbon">Carbón</option><option value="ambar">Ámbar</option></select></label>
   <label data-cat="bg">Encuadre del video<select id="sVfit"><option value="auto">Automático (recomendado)</option><option value="contain">Ver completo (con bordes difuminados)</option><option value="cover">Llenar la pantalla (recorta los lados)</option></select></label>
   <label data-cat="bg">Posición del encuadre<select id="sVpos"><option value="0">Izquierda</option><option value="50">Centro</option><option value="100">Derecha</option></select></label>
@@ -440,4 +440,4 @@
 <script src="script.js"></script>
 <div id="tour" aria-live="polite"><div id="tHole"></div><div id="tCard"><small id="tN"></small><b id="tT"></b><p id="tP"></p><div id="tBtns"><button id="tSkip" type="button">Saltar recorrido</button><button id="tNext" type="button">Siguiente</button></div></div></div>
 </body>
-</html>
+</html> 
